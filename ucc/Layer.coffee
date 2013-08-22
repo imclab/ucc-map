@@ -5,8 +5,10 @@ define (require) ->
   class Layer extends Mesh
     constructor: (imageFile) ->
       geom = new Plane(1, 1, 1, 1, 'x', 'z')
-      texture = Texture2D.load(imageFile, (e) ->
+      material = new Textured()
+      super(geom, material)
+      material.uniforms.texture = Texture2D.load(imageFile, (e) =>
+        console.log(e.height/e.width)
+        @scale.set(1, 1, e.height/e.width)
         console.log(e.width, e.height)
       )
-      material = new Textured({ texture : texture })
-      super(geom, material)

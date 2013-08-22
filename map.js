@@ -22,14 +22,37 @@ pex.require(['utils/GLX', 'ucc/Layer'], function(GLX, Layer) {
       height: 720,
       fullscreen: pex.sys.Platform.isBrowser
     },
+    layerDistance: 0.1,
     init: function() {
-      this.camera = new PerspectiveCamera(60, this.width / this.height, 0.1, 100, new Vec3(0, 2, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1));
+      var layer, _i, _len, _ref1;
+
+      this.camera = new PerspectiveCamera(60, this.width / this.height, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1));
+      this.arcball = new Arcball(this, this.camera);
       this.scene = new Scene();
-      this.scene.add(new Layer('assets/satellite.jpg'));
+      this.layers = [
+        {
+          img: 'assets/satellite.jpg',
+          level: -1
+        }, {
+          img: 'assets/A0-plan.png',
+          level: 0
+        }, {
+          img: 'assets/A1-plan.png',
+          level: 1
+        }
+      ];
+      _ref1 = this.layers;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        layer = _ref1[_i];
+        layer.mesh = new Layer(layer.img);
+        layer.mesh.position = new Vec3(0, -0.02 + layer.level * this.layerDistance, 0);
+        this.scene.add(layer.mesh);
+      }
       return this.glx = new GLX(this.gl);
     },
     draw: function() {
       this.glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black);
+      this.gl.blendFunc(this.gl.ONE_MINUS_SRC_COLOR, this.gl.ONE);
       return this.scene.draw(this.camera);
     }
   });

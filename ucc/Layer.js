@@ -12,16 +12,17 @@ define(function(require) {
     __extends(Layer, _super);
 
     function Layer(imageFile) {
-      var geom, material, texture;
+      var geom, material,
+        _this = this;
 
       geom = new Plane(1, 1, 1, 1, 'x', 'z');
-      texture = Texture2D.load(imageFile, function(e) {
+      material = new Textured();
+      Layer.__super__.constructor.call(this, geom, material);
+      material.uniforms.texture = Texture2D.load(imageFile, function(e) {
+        console.log(e.height / e.width);
+        _this.scale.set(1, 1, e.height / e.width);
         return console.log(e.width, e.height);
       });
-      material = new Textured({
-        texture: texture
-      });
-      Layer.__super__.constructor.call(this, geom, material);
     }
 
     return Layer;
