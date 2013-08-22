@@ -48,18 +48,22 @@ define (require) ->
     constructor: (@window, @scene, @camera) ->
       @up = new Vec3(0, 1, 0)
       @selectedLayer = null
+      @dragDelta = new Vec3()
 
       @window.on 'mouseMoved', (e) =>
         @testHit(e)
 
       @window.on 'leftMouseDown', (e) =>
-        @testHit(e)
+        if @selectedLayer
+          ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
+          hits = ray.hitTestPlane(@selectedLayer.position, @up)
+          @dragDelta.asSub(hits[0], @selectedLayer.position)
 
       @window.on 'mouseDragged', (e) =>
         if @selectedLayer
           ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
           hits = ray.hitTestPlane(@selectedLayer.position, @up)
-          @selectedLayer.position.setVec3(hits[0])
+          @selectedLayer.position.setVec3(hits[0]).sub(@dragDelta)
           e.handled = true
 
 

@@ -66,11 +66,18 @@ define(function(require) {
       this.camera = camera;
       this.up = new Vec3(0, 1, 0);
       this.selectedLayer = null;
+      this.dragDelta = new Vec3();
       this.window.on('mouseMoved', function(e) {
         return _this.testHit(e);
       });
       this.window.on('leftMouseDown', function(e) {
-        return _this.testHit(e);
+        var hits, ray;
+
+        if (_this.selectedLayer) {
+          ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
+          hits = ray.hitTestPlane(_this.selectedLayer.position, _this.up);
+          return _this.dragDelta.asSub(hits[0], _this.selectedLayer.position);
+        }
       });
       this.window.on('mouseDragged', function(e) {
         var hits, ray;
@@ -78,7 +85,7 @@ define(function(require) {
         if (_this.selectedLayer) {
           ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
           hits = ray.hitTestPlane(_this.selectedLayer.position, _this.up);
-          _this.selectedLayer.position.setVec3(hits[0]);
+          _this.selectedLayer.position.setVec3(hits[0]).sub(_this.dragDelta);
           return e.handled = true;
         }
       });
