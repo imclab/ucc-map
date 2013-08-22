@@ -17,7 +17,7 @@ Color = pex.color.Color;
 
 MathUtils = pex.utils.MathUtils;
 
-pex.require(['utils/GLX', 'ucc/Layer'], function(GLX, Layer) {
+pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, Layer, LayersController) {
   return pex.sys.Window.create({
     settings: {
       width: 1280,
@@ -29,8 +29,8 @@ pex.require(['utils/GLX', 'ucc/Layer'], function(GLX, Layer) {
       var _this = this;
 
       this.camera = new PerspectiveCamera(60, this.width / this.height, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1));
-      this.arcball = new Arcball(this, this.camera);
       this.scene = new Scene();
+      MathUtils.seed(0);
       this.layers = [
         {
           img: 'assets/satellite.jpg',
@@ -50,6 +50,8 @@ pex.require(['utils/GLX', 'ucc/Layer'], function(GLX, Layer) {
         layer.position = new Vec3(Math.random() * 0.5 - 0.25, -0.02 + layerData.level * _this.layerDistance, Math.random() * 0.5 - 0.25);
         return _this.scene.add(layer);
       });
+      this.layersController = new LayersController(this, this.scene, this.camera);
+      this.arcball = new Arcball(this, this.camera);
       return this.glx = new GLX(this.gl);
     },
     draw: function() {

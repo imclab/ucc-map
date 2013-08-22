@@ -8,6 +8,8 @@ define(function(require) {
   _ref2 = require('pex/materials'), Textured = _ref2.Textured, SolidColor = _ref2.SolidColor;
   Color = require('pex/color').Color;
   return Layer = (function() {
+    Layer.prototype.selected = false;
+
     function Layer(imageFile) {
       var _this = this;
 
@@ -15,14 +17,15 @@ define(function(require) {
       this.scale = new Vec3(1, 1, 1);
       this.rotaiton = new Quat();
       Texture2D.load(imageFile, function(texture) {
-        var planeGeom;
+        var borderGeom, planeGeom;
 
         planeGeom = new Plane(1, texture.height / texture.width, 1, 1, 'x', 'z');
         _this.planeMesh = new Mesh(planeGeom, new Textured({
           texture: texture
         }));
-        planeGeom.computeEdges();
-        return _this.border = new Mesh(planeGeom, new SolidColor({
+        borderGeom = new Plane(1, texture.height / texture.width, 3, 3, 'x', 'z');
+        borderGeom.computeEdges();
+        return _this.border = new Mesh(borderGeom, new SolidColor({
           color: Color.Red
         }), {
           useEdges: true
@@ -39,7 +42,9 @@ define(function(require) {
         this.border.rotation.setQuat(this.rotaiton);
         this.border.scale.setVec3(this.scale);
         this.planeMesh.draw(camera);
-        return this.border.draw(camera);
+        if (this.selected) {
+          return this.border.draw(camera);
+        }
       }
     };
 

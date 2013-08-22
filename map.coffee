@@ -8,7 +8,7 @@ pex = pex || require('./lib/pex')
 { Color } = pex.color
 { MathUtils } = pex.utils
 
-pex.require ['utils/GLX','ucc/Layer'], (GLX, Layer) ->
+pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, LayersController) ->
   pex.sys.Window.create
     settings:
       width: 1280
@@ -17,8 +17,9 @@ pex.require ['utils/GLX','ucc/Layer'], (GLX, Layer) ->
     layerDistance: 0.1
     init: () ->
       @camera = new PerspectiveCamera(60, @width/@height, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
-      @arcball = new Arcball(this, @camera)
       @scene = new Scene()
+
+      MathUtils.seed(0)
 
       @layers = [
         { img: 'assets/satellite.jpg', level: -1 }
@@ -31,6 +32,9 @@ pex.require ['utils/GLX','ucc/Layer'], (GLX, Layer) ->
         layer.position = new Vec3(Math.random()*0.5-0.25, -0.02 + layerData.level * @layerDistance, Math.random()*0.5-0.25)
         @scene.add(layer)
 
+      @layersController = new LayersController(this, @scene, @camera)
+
+      @arcball = new Arcball(this, @camera)
       @glx = new GLX(@gl)
 
     draw: () ->

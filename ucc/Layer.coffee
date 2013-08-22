@@ -6,6 +6,7 @@ define (require) ->
   { Color } = require('pex/color')
 
   class Layer
+    selected: false
     constructor: (imageFile) ->
       @position = new Vec3(0, 0, 0)
       @scale = new Vec3(1, 1, 1)
@@ -14,8 +15,9 @@ define (require) ->
       Texture2D.load(imageFile, (texture) =>
         planeGeom = new Plane(1, texture.height/texture.width, 1, 1, 'x', 'z')
         @planeMesh = new Mesh(planeGeom, new Textured({texture:texture}))
-        planeGeom.computeEdges()
-        @border = new Mesh(planeGeom, new SolidColor({color:Color.Red}), { useEdges:true })
+        borderGeom = new Plane(1, texture.height/texture.width, 3, 3, 'x', 'z')
+        borderGeom.computeEdges()
+        @border = new Mesh(borderGeom, new SolidColor({color:Color.Red}), { useEdges:true })
       )
 
     draw: (camera) ->
@@ -30,5 +32,5 @@ define (require) ->
         @border.scale.setVec3(@scale)
 
         @planeMesh.draw(camera)
-        @border.draw(camera)
+        @border.draw(camera) if @selected
 
