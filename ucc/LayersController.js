@@ -69,6 +69,19 @@ define(function(require) {
       this.window.on('mouseMoved', function(e) {
         return _this.testHit(e);
       });
+      this.window.on('leftMouseDown', function(e) {
+        return _this.testHit(e);
+      });
+      this.window.on('mouseDragged', function(e) {
+        var hits, ray;
+
+        if (_this.selectedLayer) {
+          ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
+          hits = ray.hitTestPlane(_this.selectedLayer.position, _this.up);
+          _this.selectedLayer.position.setVec3(hits[0]);
+          return e.handled = true;
+        }
+      });
     }
 
     LayersController.prototype.testHit = function(e) {

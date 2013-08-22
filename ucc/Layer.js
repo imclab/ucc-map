@@ -35,6 +35,9 @@ define(function(require) {
 
     Layer.prototype.draw = function(camera) {
       if (this.planeMesh) {
+        if (!this.position.equals(this.planeMesh.position)) {
+          this.planeMesh.updateBoundingBox();
+        }
         this.planeMesh.position.setVec3(this.position);
         this.planeMesh.rotation.setQuat(this.rotaiton);
         this.planeMesh.scale.setVec3(this.scale);

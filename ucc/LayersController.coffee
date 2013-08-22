@@ -52,6 +52,17 @@ define (require) ->
       @window.on 'mouseMoved', (e) =>
         @testHit(e)
 
+      @window.on 'leftMouseDown', (e) =>
+        @testHit(e)
+
+      @window.on 'mouseDragged', (e) =>
+        if @selectedLayer
+          ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
+          hits = ray.hitTestPlane(@selectedLayer.position, @up)
+          @selectedLayer.position.setVec3(hits[0])
+          e.handled = true
+
+
     testHit: (e) ->
       ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
       hitLayers = []

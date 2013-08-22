@@ -23,6 +23,9 @@ define (require) ->
     draw: (camera) ->
       if @planeMesh
 
+        if !@position.equals(@planeMesh.position)
+          @planeMesh.updateBoundingBox()
+
         @planeMesh.position.setVec3(@position)
         @planeMesh.rotation.setQuat(@rotaiton)
         @planeMesh.scale.setVec3(@scale)
