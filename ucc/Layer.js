@@ -23,6 +23,7 @@ define(function(require) {
         _this.planeMesh = new Mesh(planeGeom, new Textured({
           texture: texture
         }));
+        _this.planeMesh.updateBoundingBox();
         borderGeom = new Plane(1, texture.height / texture.width, 3, 3, 'x', 'z');
         borderGeom.computeEdges();
         return _this.border = new Mesh(borderGeom, new SolidColor({
@@ -35,15 +36,15 @@ define(function(require) {
 
     Layer.prototype.draw = function(camera) {
       if (this.planeMesh) {
-        if (!this.position.equals(this.planeMesh.position)) {
+        if (!this.position.equals(this.planeMesh.position) || !this.scale.equals(this.planeMesh.scale)) {
+          this.planeMesh.position.setVec3(this.position);
+          this.planeMesh.rotation.setQuat(this.rotaiton);
+          this.planeMesh.scale.setVec3(this.scale);
+          this.border.position.setVec3(this.position);
+          this.border.rotation.setQuat(this.rotaiton);
+          this.border.scale.setVec3(this.scale);
           this.planeMesh.updateBoundingBox();
         }
-        this.planeMesh.position.setVec3(this.position);
-        this.planeMesh.rotation.setQuat(this.rotaiton);
-        this.planeMesh.scale.setVec3(this.scale);
-        this.border.position.setVec3(this.position);
-        this.border.rotation.setQuat(this.rotaiton);
-        this.border.scale.setVec3(this.scale);
         this.planeMesh.draw(camera);
         if (this.selected) {
           return this.border.draw(camera);

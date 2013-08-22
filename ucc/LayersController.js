@@ -66,7 +66,10 @@ define(function(require) {
       this.camera = camera;
       this.up = new Vec3(0, 1, 0);
       this.selectedLayer = null;
+      this.dragCenter = new Vec3();
+      this.dragStart = new Vec3();
       this.dragDelta = new Vec3();
+      this.dragScale = new Vec3();
       this.window.on('mouseMoved', function(e) {
         return _this.testHit(e);
       });
@@ -76,28 +79,39 @@ define(function(require) {
         if (_this.selectedLayer) {
           ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
           hits = ray.hitTestPlane(_this.selectedLayer.position, _this.up);
-          return _this.dragDelta.asSub(hits[0], _this.selectedLayer.position);
+          _this.dragCenter.setVec3(_this.selectedLayer.position);
+          _this.dragStart.setVec3(hits[0]);
+          _this.dragDelta.asSub(hits[0], _this.selectedLayer.position);
+          return _this.dragScale.setVec3(_this.selectedLayer.scale);
         }
       });
       this.window.on('mouseDragged', function(e) {
-        var hits, ray;
+        var currentDistance, hits, originalDistance, ray, scaleRatio;
 
         if (_this.selectedLayer) {
           ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
           hits = ray.hitTestPlane(_this.selectedLayer.position, _this.up);
-          _this.selectedLayer.position.setVec3(hits[0]).sub(_this.dragDelta);
+          if (e.shift) {
+            originalDistance = _this.dragStart.distance(_this.dragCenter);
+            currentDistance = hits[0].distance(_this.dragCenter);
+            scaleRatio = currentDistance / originalDistance;
+            _this.selectedLayer.scale.set(_this.dragScale.x * scaleRatio, _this.dragScale.y * scaleRatio, _this.dragScale.z * scaleRatio);
+          } else {
+            _this.selectedLayer.position.setVec3(hits[0]).sub(_this.dragDelta);
+          }
           return e.handled = true;
         }
       });
     }
 
     LayersController.prototype.testHit = function(e) {
-      var hitLayers, ray,
+      var hitLayers, hitPoints, ray,
         _this = this;
 
       ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
       hitLayers = [];
-      this.scene.drawables.forEach(function(drawable) {
+      hitPoints = [];
+      this.scene.drawables.forEach(function(drawable, i) {
         var bbox, hit, hits;
 
         if (drawable instanceof Layer) {

@@ -48,7 +48,10 @@ define (require) ->
     constructor: (@window, @scene, @camera) ->
       @up = new Vec3(0, 1, 0)
       @selectedLayer = null
+      @dragCenter = new Vec3()
+      @dragStart = new Vec3()
       @dragDelta = new Vec3()
+      @dragScale = new Vec3()
 
       @window.on 'mouseMoved', (e) =>
         @testHit(e)
@@ -57,20 +60,31 @@ define (require) ->
         if @selectedLayer
           ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
           hits = ray.hitTestPlane(@selectedLayer.position, @up)
+          @dragCenter.setVec3(@selectedLayer.position)
+          @dragStart.setVec3(hits[0])
           @dragDelta.asSub(hits[0], @selectedLayer.position)
+          @dragScale.setVec3(@selectedLayer.scale)
 
       @window.on 'mouseDragged', (e) =>
         if @selectedLayer
           ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
           hits = ray.hitTestPlane(@selectedLayer.position, @up)
-          @selectedLayer.position.setVec3(hits[0]).sub(@dragDelta)
+          if e.shift
+            originalDistance = @dragStart.distance(@dragCenter)
+            currentDistance = hits[0].distance(@dragCenter)
+            scaleRatio = currentDistance / originalDistance
+            @selectedLayer.scale.set(@dragScale.x * scaleRatio, @dragScale.y * scaleRatio, @dragScale.z * scaleRatio)
+          else
+            @selectedLayer.position.setVec3(hits[0]).sub(@dragDelta)
           e.handled = true
+
 
 
     testHit: (e) ->
       ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
       hitLayers = []
-      @scene.drawables.forEach (drawable) =>
+      hitPoints = []
+      @scene.drawables.forEach (drawable, i) =>
         if drawable instanceof Layer
           if drawable.enabled == false then return
           drawable.selected = false
