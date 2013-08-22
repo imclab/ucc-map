@@ -6,6 +6,7 @@ pex = pex || require('./lib/pex')
 { Cube } = pex.geom.gen
 { Test } = pex.materials
 { Color } = pex.color
+{ MathUtils } = pex.utils
 
 pex.require ['utils/GLX','ucc/Layer'], (GLX, Layer) ->
   pex.sys.Window.create
@@ -24,10 +25,11 @@ pex.require ['utils/GLX','ucc/Layer'], (GLX, Layer) ->
         { img: 'assets/A0-plan.png', level: 0 }
         { img: 'assets/A1-plan.png', level: 1 }
       ]
-      for layer in @layers
-        layer.mesh = new Layer(layer.img)
-        layer.mesh.position = new Vec3(0, -0.02 + layer.level * @layerDistance, 0)
-        @scene.add(layer.mesh)
+
+      @layers = @layers.map (layerData) =>
+        layer = new Layer(layerData.img)
+        layer.position = new Vec3(Math.random()*0.5-0.25, -0.02 + layerData.level * @layerDistance, Math.random()*0.5-0.25)
+        @scene.add(layer)
 
       @glx = new GLX(@gl)
 
