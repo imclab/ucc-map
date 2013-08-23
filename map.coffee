@@ -7,6 +7,7 @@ pex = pex || require('./lib/pex')
 { Test } = pex.materials
 { Color } = pex.color
 { MathUtils } = pex.utils
+{ GUI } = pex.gui
 
 pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, LayersController) ->
   pex.sys.Window.create
@@ -20,6 +21,9 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
       @camera = new PerspectiveCamera(60, @width/@height, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
       #@camera = new OrthographicCamera(-@width/@height, @width/@height, -1, 1, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
       @scene = new Scene()
+
+      @gui = new GUI(this)
+      @gui.addLabel('x - xray mode')
 
       MathUtils.seed(0)
 
@@ -58,8 +62,12 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
               drawable.planeMesh.material.uniforms.xray = @xray
 
     draw: () ->
-      @layers[0].enabled = !@xray
       @glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black)
+      @layers[0].enabled = !@xray
+      @layers[0].border.draw(@camera) if @xray
+
       @gl.enable(@gl.BLEND)
       @gl.blendFunc(@gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA)
       @scene.draw(@camera)
+
+      @gui.draw()
