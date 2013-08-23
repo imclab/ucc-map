@@ -3,10 +3,12 @@ define (require) ->
   { Vec3, Quat, BoundingBox } = require('pex/geom')
   { Plane } = require('pex/geom/gen')
   { Textured, SolidColor } = require('pex/materials')
+  TexturedAlpha = require('ucc/TexturedAlpha')
   { Color } = require('pex/color')
 
   class Layer
     selected: false
+    alpha: 1
     constructor: (imageFile) ->
       @position = new Vec3(0, 0, 0)
       @scale = new Vec3(1, 1, 1)
@@ -17,7 +19,7 @@ define (require) ->
 
       Texture2D.load(imageFile, (texture) =>
         planeGeom = new Plane(1, texture.height/texture.width, 1, 1, 'x', 'z')
-        @planeMesh = new Mesh(planeGeom, new Textured({texture:texture}))
+        @planeMesh = new Mesh(planeGeom, new TexturedAlpha({texture:texture, alpha:0.5}))
         @planeMesh.updateBoundingBox()
         borderGeom = new Plane(1, texture.height/texture.width, 3, 3, 'x', 'z')
         borderGeom.computeEdges()
@@ -28,6 +30,7 @@ define (require) ->
       if @planeMesh
 
         @rotation.setAxisAngle(@up, @rotationAngle)
+        @planeMesh.material.uniforms.alpha = @alpha
         if !@position.equals(@planeMesh.position) || !@scale.equals(@planeMesh.scale) || !@rotation.equals(@planeMesh.rotation)
           @planeMesh.position.setVec3(@position)
           @planeMesh.rotation.setQuat(@rotation)

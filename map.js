@@ -49,6 +49,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
         layer = new Layer(layerData.img);
         layer.position = new Vec3(Math.random() * 0.5 - 0.25, -0.02 + layerData.level * _this.layerDistance, Math.random() * 0.5 - 0.25);
         layer.rotationAngle = 0;
+        layer.name = layerData.img;
         return _this.scene.add(layer);
       });
       this.layersController = new LayersController(this, this.scene, this.camera);
@@ -57,7 +58,8 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
     },
     draw: function() {
       this.glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black);
-      this.gl.blendFunc(this.gl.ONE_MINUS_SRC_COLOR, this.gl.ONE);
+      this.gl.enable(this.gl.BLEND);
+      this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
       return this.scene.draw(this.camera);
     }
   });

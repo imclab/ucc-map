@@ -31,6 +31,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
         layer = new Layer(layerData.img)
         layer.position = new Vec3(Math.random()*0.5-0.25, -0.02 + layerData.level * @layerDistance, Math.random()*0.5-0.25)
         layer.rotationAngle = 0;
+        layer.name = layerData.img
         @scene.add(layer)
 
       @layersController = new LayersController(this, @scene, @camera)
@@ -40,6 +41,6 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
 
     draw: () ->
       @glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black)
-      #@gl.enable(@gl.BLEND)
-      @gl.blendFunc(@gl.ONE_MINUS_SRC_COLOR, @gl.ONE)
+      @gl.enable(@gl.BLEND)
+      @gl.blendFunc(@gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA)
       @scene.draw(@camera)
