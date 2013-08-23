@@ -48,6 +48,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
 
         layer = new Layer(layerData.img);
         layer.position = new Vec3(Math.random() * 0.5 - 0.25, -0.02 + layerData.level * _this.layerDistance, Math.random() * 0.5 - 0.25);
+        layer.rotationAngle = 0;
         return _this.scene.add(layer);
       });
       this.layersController = new LayersController(this, this.scene, this.camera);

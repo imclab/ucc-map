@@ -1,6 +1,7 @@
 define (require) ->
   Layer = require('./Layer')
-  { Vec3 } = require('pex/geom')
+  { Vec3, Quat } = require('pex/geom')
+
   rayBoxIntersection = (ray, bbox, t0, t1) ->
     tmin = 0
     tmax = 0
@@ -52,6 +53,7 @@ define (require) ->
       @dragStart = new Vec3()
       @dragDelta = new Vec3()
       @dragScale = new Vec3()
+      @dragStartRotationAngle = 0
 
       @window.on 'mouseMoved', (e) =>
         @testHit(e)
@@ -64,6 +66,8 @@ define (require) ->
           @dragStart.setVec3(hits[0])
           @dragDelta.asSub(hits[0], @selectedLayer.position)
           @dragScale.setVec3(@selectedLayer.scale)
+          @dragRotationInit = false
+          @dragRotationStartAngle = @selectedLayer.rotationAngle
 
       @window.on 'mouseDragged', (e) =>
         if @selectedLayer
@@ -74,10 +78,20 @@ define (require) ->
             currentDistance = hits[0].distance(@dragCenter)
             scaleRatio = currentDistance / originalDistance
             @selectedLayer.scale.set(@dragScale.x * scaleRatio, @dragScale.y * scaleRatio, @dragScale.z * scaleRatio)
-          else
+          if e.option
+            @dragDelta.asSub(hits[0], @selectedLayer.position)
+            radians = Math.atan2(-@dragDelta.z, @dragDelta.x)
+            angle = Math.floor(radians*180/Math.PI)
+            if !@dragRotationInit
+              @dragRotationInit = true
+              @dragRotationBaseAngle = angle #-> rotateAngleBase
+            dragRotationDiffAngle = angle - @dragRotationBaseAngle
+            @selectedLayer.rotationAngle = @dragRotationStartAngle + dragRotationDiffAngle
+          if !e.shift && !e.option
             @selectedLayer.position.setVec3(hits[0]).sub(@dragDelta)
           e.handled = true
 
+      @window.on 'keyPressed', (e) ->
 
 
     testHit: (e) ->

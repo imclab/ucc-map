@@ -15,7 +15,10 @@ define(function(require) {
 
       this.position = new Vec3(0, 0, 0);
       this.scale = new Vec3(1, 1, 1);
-      this.rotaiton = new Quat();
+      this.up = new Vec3(0, 1, 0);
+      this.rotation = new Quat();
+      this.axis = new Vec3(0, 1, 0);
+      this.rotationAngle = 0;
       Texture2D.load(imageFile, function(texture) {
         var borderGeom, planeGeom;
 
@@ -36,12 +39,13 @@ define(function(require) {
 
     Layer.prototype.draw = function(camera) {
       if (this.planeMesh) {
-        if (!this.position.equals(this.planeMesh.position) || !this.scale.equals(this.planeMesh.scale)) {
+        this.rotation.setAxisAngle(this.up, this.rotationAngle);
+        if (!this.position.equals(this.planeMesh.position) || !this.scale.equals(this.planeMesh.scale) || !this.rotation.equals(this.planeMesh.rotation)) {
           this.planeMesh.position.setVec3(this.position);
-          this.planeMesh.rotation.setQuat(this.rotaiton);
+          this.planeMesh.rotation.setQuat(this.rotation);
           this.planeMesh.scale.setVec3(this.scale);
           this.border.position.setVec3(this.position);
-          this.border.rotation.setQuat(this.rotaiton);
+          this.border.rotation.setQuat(this.rotation);
           this.border.scale.setVec3(this.scale);
           this.planeMesh.updateBoundingBox();
         }

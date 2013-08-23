@@ -10,7 +10,10 @@ define (require) ->
     constructor: (imageFile) ->
       @position = new Vec3(0, 0, 0)
       @scale = new Vec3(1, 1, 1)
-      @rotaiton = new Quat();
+      @up = new Vec3(0, 1, 0)
+      @rotation = new Quat()
+      @axis = new Vec3(0, 1, 0)
+      @rotationAngle = 0
 
       Texture2D.load(imageFile, (texture) =>
         planeGeom = new Plane(1, texture.height/texture.width, 1, 1, 'x', 'z')
@@ -24,13 +27,14 @@ define (require) ->
     draw: (camera) ->
       if @planeMesh
 
-        if !@position.equals(@planeMesh.position) || !@scale.equals(@planeMesh.scale)# || !@rotation.equals(@planeMesh.rotation)
+        @rotation.setAxisAngle(@up, @rotationAngle)
+        if !@position.equals(@planeMesh.position) || !@scale.equals(@planeMesh.scale) || !@rotation.equals(@planeMesh.rotation)
           @planeMesh.position.setVec3(@position)
-          @planeMesh.rotation.setQuat(@rotaiton)
+          @planeMesh.rotation.setQuat(@rotation)
           @planeMesh.scale.setVec3(@scale)
 
           @border.position.setVec3(@position)
-          @border.rotation.setQuat(@rotaiton)
+          @border.rotation.setQuat(@rotation)
           @border.scale.setVec3(@scale)
           @planeMesh.updateBoundingBox()
 

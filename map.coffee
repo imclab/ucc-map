@@ -22,14 +22,15 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
       MathUtils.seed(0)
 
       @layers = [
-        { img: 'assets/satellite.jpg', level: -1 }
-        { img: 'assets/A0-plan.png', level: 0 }
-        { img: 'assets/A1-plan.png', level: 1 }
+        { img: 'assets/satellite.jpg', level: -1}
+        { img: 'assets/A0-plan.png',   level:  0}
+        { img: 'assets/A1-plan.png',   level:  1}
       ]
 
       @layers = @layers.map (layerData) =>
         layer = new Layer(layerData.img)
         layer.position = new Vec3(Math.random()*0.5-0.25, -0.02 + layerData.level * @layerDistance, Math.random()*0.5-0.25)
+        layer.rotationAngle = 0;
         @scene.add(layer)
 
       @layersController = new LayersController(this, @scene, @camera)
