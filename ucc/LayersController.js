@@ -61,6 +61,10 @@ define(function(require) {
     return -2;
   };
   return LayersController = (function() {
+    LayersController.prototype.compactLayers = false;
+
+    LayersController.prototype.enabled = true;
+
     function LayersController(window, scene, camera) {
       var _this = this;
 
@@ -77,11 +81,17 @@ define(function(require) {
       this.dragStartRotationAngle = 0;
       this.loadLayers('layers.txt');
       this.window.on('mouseMoved', function(e) {
+        if (!_this.enabled) {
+          return;
+        }
         return _this.testHit(e);
       });
       this.window.on('leftMouseDown', function(e) {
         var hits, ray;
 
+        if (!_this.enabled) {
+          return;
+        }
         if (_this.selectedLayer) {
           ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
           hits = ray.hitTestPlane(_this.selectedLayer.position, _this.up);
@@ -96,9 +106,15 @@ define(function(require) {
       this.window.on('mouseDragged', function(e) {
         var angle, currentDistance, dragRotationDiffAngle, hits, originalDistance, radians, ray, scaleRatio;
 
+        if (!_this.enabled) {
+          return;
+        }
         if (_this.selectedLayer) {
           ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
           hits = ray.hitTestPlane(_this.selectedLayer.position, _this.up);
+          if (!e.shift && !e.option) {
+            _this.selectedLayer.position.setVec3(hits[0]).sub(_this.dragDelta);
+          }
           if (e.shift) {
             originalDistance = _this.dragStart.distance(_this.dragCenter);
             currentDistance = hits[0].distance(_this.dragCenter);
@@ -116,31 +132,47 @@ define(function(require) {
             dragRotationDiffAngle = angle - _this.dragRotationBaseAngle;
             _this.selectedLayer.rotationAngle = _this.dragRotationStartAngle + dragRotationDiffAngle;
           }
-          if (!e.shift && !e.option) {
-            _this.selectedLayer.position.setVec3(hits[0]).sub(_this.dragDelta);
-          }
           return e.handled = true;
         }
       });
       this.window.on('keyDown', function(e) {
+        if (!_this.enabled) {
+          return;
+        }
         switch (e.str) {
           case '-':
             if (_this.selectedLayer) {
-              return _this.selectedLayer.alpha = Math.max(0, _this.selectedLayer.alpha - 0.1);
+              _this.selectedLayer.alpha = Math.max(0, _this.selectedLayer.alpha - 0.1);
             }
             break;
           case '=':
             if (_this.selectedLayer) {
-              return _this.selectedLayer.alpha = Math.min(1, _this.selectedLayer.alpha + 0.1);
+              _this.selectedLayer.alpha = Math.min(1, _this.selectedLayer.alpha + 0.1);
             }
             break;
           case 'S':
-            return _this.saveLayers('layers.txt');
+            _this.saveLayers('layers.txt');
+            break;
           case 'L':
-            return _this.loadLayers('layers.txt');
+            _this.loadLayers('layers.txt');
+        }
+        switch (e.keyCode) {
+          case 48:
+            return _this.toggleCompactLayers();
         }
       });
     }
+
+    LayersController.prototype.toggleCompactLayers = function() {
+      var _this = this;
+
+      this.compactLayers = !this.compactLayers;
+      return this.scene.drawables.forEach(function(drawable, i) {
+        if (drawable instanceof Layer) {
+          return drawable.position.y = _this.compactLayers ? drawable.level * 0.005 : drawable.level * 0.1;
+        }
+      });
+    };
 
     LayersController.prototype.saveLayers = function(fileName) {
       var data,
@@ -201,7 +233,7 @@ define(function(require) {
       this.scene.drawables.forEach(function(drawable, i) {
         var bbox, hit, hits;
 
-        if (drawable instanceof Layer) {
+        if (drawable instanceof Layer && i > 0) {
           if (drawable.enabled === false) {
             return;
           }

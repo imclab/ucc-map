@@ -23,8 +23,14 @@ define(function(require) {
       this.axis = new Vec3(0, 1, 0);
       this.rotationAngle = 0;
       Texture2D.load(imageFile, function(texture) {
-        var borderGeom, planeGeom;
+        var borderGeom, gl, planeGeom;
 
+        texture.bind();
+        gl = texture.gl;
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameterf(gl.TEXTURE_2D, 0x84FE, 4);
+        gl.generateMipmap(gl.TEXTURE_2D);
         planeGeom = new Plane(1, texture.height / texture.width, 1, 1, 'x', 'z');
         _this.planeMesh = new Mesh(planeGeom, new TexturedAlpha({
           texture: texture,

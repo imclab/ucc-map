@@ -47,6 +47,8 @@ define (require) ->
     #return (tmin < t1) && (tmax > t0)
 
   class LayersController
+    compactLayers: false
+    enabled: true
     constructor: (@window, @scene, @camera) ->
       @up = new Vec3(0, 1, 0)
       @selectedLayer = null
@@ -59,9 +61,11 @@ define (require) ->
       @loadLayers('layers.txt')
 
       @window.on 'mouseMoved', (e) =>
+        return if !@enabled
         @testHit(e)
 
       @window.on 'leftMouseDown', (e) =>
+        return if !@enabled
         if @selectedLayer
           ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
           hits = ray.hitTestPlane(@selectedLayer.position, @up)
@@ -73,9 +77,12 @@ define (require) ->
           @dragRotationStartAngle = @selectedLayer.rotationAngle
 
       @window.on 'mouseDragged', (e) =>
+        return if !@enabled
         if @selectedLayer
           ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
           hits = ray.hitTestPlane(@selectedLayer.position, @up)
+          if !e.shift and !e.option
+            @selectedLayer.position.setVec3(hits[0]).sub(@dragDelta)
           if e.shift
             originalDistance = @dragStart.distance(@dragCenter)
             currentDistance = hits[0].distance(@dragCenter)
@@ -90,16 +97,23 @@ define (require) ->
               @dragRotationBaseAngle = angle #-> rotateAngleBase
             dragRotationDiffAngle = angle - @dragRotationBaseAngle
             @selectedLayer.rotationAngle = @dragRotationStartAngle + dragRotationDiffAngle
-          if !e.shift && !e.option
-            @selectedLayer.position.setVec3(hits[0]).sub(@dragDelta)
           e.handled = true
 
       @window.on 'keyDown', (e) =>
+        return if !@enabled
         switch e.str
           when '-' then if @selectedLayer then @selectedLayer.alpha = Math.max(0, @selectedLayer.alpha - 0.1)
           when '=' then if @selectedLayer then @selectedLayer.alpha = Math.min(1, @selectedLayer.alpha + 0.1)
           when 'S' then @saveLayers('layers.txt')
           when 'L' then @loadLayers('layers.txt')
+        switch e.keyCode
+          when 48 then @toggleCompactLayers()
+
+    toggleCompactLayers: () ->
+      @compactLayers = !@compactLayers
+      @scene.drawables.forEach (drawable, i) =>
+        if drawable instanceof Layer
+          drawable.position.y = if @compactLayers then drawable.level * 0.005 else drawable.level * 0.1
 
     saveLayers: (fileName) ->
       console.log('LayersController.saveLayers' + fileName)
@@ -136,7 +150,7 @@ define (require) ->
       hitLayers = []
       hitPoints = []
       @scene.drawables.forEach (drawable, i) =>
-        if drawable instanceof Layer
+        if drawable instanceof Layer and i > 0
           if drawable.enabled == false then return
           drawable.selected = false
           hits = ray.hitTestPlane(drawable.position, @up)
