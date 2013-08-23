@@ -31,10 +31,14 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
     init: function() {
       var _this = this;
 
-      this.camera = new PerspectiveCamera(60, this.width / this.height, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1));
+      this.camera = new PerspectiveCamera(60, this.width / this.height, 0.01, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1));
       this.scene = new Scene();
       this.gui = new GUI(this);
       this.gui.addLabel('x - xray mode');
+      this.gui.addLabel('1 - ground floor');
+      this.gui.addLabel('2 - 1st floor');
+      this.gui.addLabel('3 - 2nd floor');
+      this.gui.addLabel('a - all floors');
       MathUtils.seed(0);
       this.layers = [
         {
@@ -88,7 +92,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
       this.arcball = new Arcball(this, this.camera);
       this.glx = new GLX(this.gl);
       return this.on('keyDown', function(e) {
-        var drawable, _i, _len, _ref1, _results;
+        var drawable, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref1, _ref2, _ref3, _ref4, _ref5, _results, _results1, _results2, _results3, _results4;
 
         switch (e.str) {
           case 'x':
@@ -100,6 +104,42 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
               _results.push(drawable.planeMesh.material.uniforms.xray = _this.xray);
             }
             return _results;
+            break;
+          case '1':
+            _ref2 = _this.scene.drawables;
+            _results1 = [];
+            for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+              drawable = _ref2[_j];
+              _results1.push(drawable.enabled = drawable.level === 0);
+            }
+            return _results1;
+            break;
+          case '2':
+            _ref3 = _this.scene.drawables;
+            _results2 = [];
+            for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+              drawable = _ref3[_k];
+              _results2.push(drawable.enabled = drawable.level === 1);
+            }
+            return _results2;
+            break;
+          case '3':
+            _ref4 = _this.scene.drawables;
+            _results3 = [];
+            for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
+              drawable = _ref4[_l];
+              _results3.push(drawable.enabled = drawable.level === 2);
+            }
+            return _results3;
+            break;
+          case 'a':
+            _ref5 = _this.scene.drawables;
+            _results4 = [];
+            for (_m = 0, _len4 = _ref5.length; _m < _len4; _m++) {
+              drawable = _ref5[_m];
+              _results4.push(drawable.enabled = true);
+            }
+            return _results4;
         }
       });
     },
