@@ -19,7 +19,7 @@ MathUtils = pex.utils.MathUtils;
 
 GUI = pex.gui.GUI;
 
-pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, Layer, LayersController) {
+pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/PanningController'], function(GLX, Layer, LayersController, PanningController) {
   return pex.sys.Window.create({
     settings: {
       width: 1280,
@@ -110,6 +110,8 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
       this.layersController = new LayersController(this, this.scene, this.camera);
       this.layersController.enabled = false;
       this.arcball = new Arcball(this, this.camera);
+      this.panner = new Panner(this, this.camera);
+      this.arcball.enabled = false;
       this.glx = new GLX(this.gl);
       return this.on('keyDown', function(e) {
         var drawable, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref1, _ref2, _ref3, _ref4, _ref5, _results, _results1, _results2, _results3, _results4;

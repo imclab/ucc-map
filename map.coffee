@@ -9,7 +9,7 @@ pex = pex || require('./lib/pex')
 { MathUtils } = pex.utils
 { GUI } = pex.gui
 
-pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, LayersController) ->
+pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/PanningController'], (GLX, Layer, LayersController, PanningController) ->
   pex.sys.Window.create
     settings:
       width: 1280
@@ -59,6 +59,8 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
       @layersController.enabled = false
 
       @arcball = new Arcball(this, @camera)
+      @panner = new Panner(this, @camera)
+      @arcball.enabled = false
       @glx = new GLX(@gl)
 
       @on 'keyDown', (e) =>
