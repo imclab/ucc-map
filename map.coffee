@@ -17,6 +17,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
       fullscreen: pex.sys.Platform.isBrowser
     layerDistance: 0.1
     xray: false
+    focusLayerId: 0,
     init: () ->
       @camera = new PerspectiveCamera(60, @width/@height, 0.01, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
       #@camera = new OrthographicCamera(-@width/@height, @width/@height, -1, 1, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
@@ -32,15 +33,17 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
       MathUtils.seed(0)
 
       @layers = [
-        { img: 'assets/satellite.jpg', level: -1, enabled: false}
-        { img: 'assets/A0-plan.png',   level:  0, enabled: true}
-        { img: 'assets/A1-plan.png',   level:  1, enabled: true}
-        { img: 'assets/B0-plan.png',   level:  0, enabled: true}
-        { img: 'assets/B1-plan.png',   level:  1, enabled: true}
-        { img: 'assets/C0-plan.png',   level:  0, enabled: true}
-        { img: 'assets/C1-plan.png',   level:  1, enabled: true}
-        { img: 'assets/C2-plan.png',   level:  2, enabled: true}
+        { img: 'assets/satellite.jpg', level: -1, enabled: false, name: 'ALL', value:0 }
+        { img: 'assets/A0-plan.png',   level:  0, enabled: true , name: 'A 0' , value:1 }
+        { img: 'assets/A1-plan.png',   level:  1, enabled: true , name: 'A 1' , value:2 }
+        { img: 'assets/B0-plan.png',   level:  0, enabled: true , name: 'B 0' , value:3 }
+        { img: 'assets/B1-plan.png',   level:  1, enabled: true , name: 'B 1' , value:4 }
+        { img: 'assets/C0-plan.png',   level:  0, enabled: true , name: 'C 0' , value:5 }
+        { img: 'assets/C1-plan.png',   level:  1, enabled: true , name: 'C 1' , value:6 }
+        { img: 'assets/C2-plan.png',   level:  2, enabled: true , name: 'C 2' , value:7 }
       ]
+
+      @gui.addRadioList('Focus on', this, 'focusLayerId', @layers, (e) => @onFocusLayerChange(e))
 
       @layers = @layers.map (layerData) =>
         layer = new Layer(layerData.img)
@@ -76,6 +79,10 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
           when 'a'
             for drawable in @scene.drawables
               drawable.enabled = true
+
+    onFocusLayerChange: (layerIndex) ->
+      for drawable, i in @scene.drawables
+        drawable.enabled = (i == layerIndex) || (0 == layerIndex)
 
     draw: () ->
       @glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black)

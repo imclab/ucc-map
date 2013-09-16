@@ -28,6 +28,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
     },
     layerDistance: 0.1,
     xray: false,
+    focusLayerId: 0,
     init: function() {
       var _this = this;
 
@@ -44,37 +45,56 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
         {
           img: 'assets/satellite.jpg',
           level: -1,
-          enabled: false
+          enabled: false,
+          name: 'ALL',
+          value: 0
         }, {
           img: 'assets/A0-plan.png',
           level: 0,
-          enabled: true
+          enabled: true,
+          name: 'A 0',
+          value: 1
         }, {
           img: 'assets/A1-plan.png',
           level: 1,
-          enabled: true
+          enabled: true,
+          name: 'A 1',
+          value: 2
         }, {
           img: 'assets/B0-plan.png',
           level: 0,
-          enabled: true
+          enabled: true,
+          name: 'B 0',
+          value: 3
         }, {
           img: 'assets/B1-plan.png',
           level: 1,
-          enabled: true
+          enabled: true,
+          name: 'B 1',
+          value: 4
         }, {
           img: 'assets/C0-plan.png',
           level: 0,
-          enabled: true
+          enabled: true,
+          name: 'C 0',
+          value: 5
         }, {
           img: 'assets/C1-plan.png',
           level: 1,
-          enabled: true
+          enabled: true,
+          name: 'C 1',
+          value: 6
         }, {
           img: 'assets/C2-plan.png',
           level: 2,
-          enabled: true
+          enabled: true,
+          name: 'C 2',
+          value: 7
         }
       ];
+      this.gui.addRadioList('Focus on', this, 'focusLayerId', this.layers, function(e) {
+        return _this.onFocusLayerChange(e);
+      });
       this.layers = this.layers.map(function(layerData) {
         var layer;
 
@@ -142,6 +162,17 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
             return _results4;
         }
       });
+    },
+    onFocusLayerChange: function(layerIndex) {
+      var drawable, i, _i, _len, _ref1, _results;
+
+      _ref1 = this.scene.drawables;
+      _results = [];
+      for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+        drawable = _ref1[i];
+        _results.push(drawable.enabled = (i === layerIndex) || (0 === layerIndex));
+      }
+      return _results;
     },
     draw: function() {
       this.glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black);
