@@ -88,7 +88,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController'], function(GLX, La
         return layer;
       });
       this.layersController = new LayersController(this, this.scene, this.camera);
-      this.layersController.enabled = true;
+      this.layersController.enabled = false;
       this.arcball = new Arcball(this, this.camera);
       this.glx = new GLX(this.gl);
       return this.on('keyDown', function(e) {

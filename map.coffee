@@ -53,7 +53,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController'], (GLX, Layer, Laye
         layer
 
       @layersController = new LayersController(this, @scene, @camera)
-      @layersController.enabled = true
+      @layersController.enabled = false
 
       @arcball = new Arcball(this, @camera)
       @glx = new GLX(@gl)
