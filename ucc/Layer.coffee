@@ -5,6 +5,7 @@ define (require) ->
   { Textured, SolidColor } = require('pex/materials')
   TexturedAlpha = require('ucc/TexturedAlpha')
   { Color } = require('pex/color')
+  { Platform } = require('pex/sys')
 
   class Layer
     selected: false
@@ -23,9 +24,10 @@ define (require) ->
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)#_MIPMAP_NEAREST)
         #ext = gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
-        #gl.texParameterf(gl.TEXTURE_2D, 0x84FE, 4);
-        #gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        #gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        if Platform.isPlask
+          gl.texParameterf(gl.TEXTURE_2D, 0x84FE, 4)
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.generateMipmap(gl.TEXTURE_2D)
