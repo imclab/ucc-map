@@ -52,7 +52,6 @@ define (require) ->
       @rightAxis.scale(@dragDiff.x * @panScale)
       @upAxis.scale(@dragDiff.y * @panScale)
 
-      console.log(@upAxis, @rightAxis)
       @camera.getPosition().setVec3(@cameraClickPos).add(@rightAxis).add(@upAxis)
       @camera.getTarget().setVec3(@cameraClickTarget).add(@rightAxis).add(@upAxis)
       @camera.updateMatrices()

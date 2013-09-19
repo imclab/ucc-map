@@ -66,7 +66,6 @@ define(function(require) {
       this.rightAxis.asCross(this.upAxis, this.forwardAxis).normalize();
       this.rightAxis.scale(this.dragDiff.x * this.panScale);
       this.upAxis.scale(this.dragDiff.y * this.panScale);
-      console.log(this.upAxis, this.rightAxis);
       this.camera.getPosition().setVec3(this.cameraClickPos).add(this.rightAxis).add(this.upAxis);
       this.camera.getTarget().setVec3(this.cameraClickTarget).add(this.rightAxis).add(this.upAxis);
       return this.camera.updateMatrices();
