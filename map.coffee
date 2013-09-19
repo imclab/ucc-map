@@ -85,6 +85,12 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner'], (
     onFocusLayerChange: (layerIndex) ->
       for drawable, i in @scene.drawables
         drawable.enabled = (i == layerIndex) || (0 == layerIndex)
+      selectedLayer = @scene.drawables[layerIndex]
+      @camera.setTarget(selectedLayer.position)
+      @camera.setUp(new Vec3(0, 0, 1))
+      @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)
+      console.log(@camera.target, @camera.up, @camera.position)
+      @camera.updateMatrices()
 
     draw: () ->
       @glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black)
