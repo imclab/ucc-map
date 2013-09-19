@@ -166,15 +166,19 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner'], 
       });
     },
     onFocusLayerChange: function(layerIndex) {
-      var drawable, i, _i, _len, _ref1, _results;
+      var drawable, i, selectedLayer, _i, _len, _ref1;
 
       _ref1 = this.scene.drawables;
-      _results = [];
       for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
         drawable = _ref1[i];
-        _results.push(drawable.enabled = (i === layerIndex) || (0 === layerIndex));
+        drawable.enabled = (i === layerIndex) || (0 === layerIndex);
       }
-      return _results;
+      selectedLayer = this.scene.drawables[layerIndex];
+      this.camera.setTarget(selectedLayer.position);
+      this.camera.setUp(new Vec3(0, 0, 1));
+      this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
+      console.log(this.camera.target, this.camera.up, this.camera.position);
+      return this.camera.updateMatrices();
     },
     draw: function() {
       this.glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black);
