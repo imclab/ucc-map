@@ -37,6 +37,7 @@ define (require) ->
         hit3d = hits[0]
         hit2d = @layerPlane.rebase(@layerPlane.project(hit3d))
         @nodes.push({
+          layerId: @currentLayer.id
           position: hit3d,
           position2d: hit2d
         })

@@ -55,6 +55,7 @@ define(function(require) {
         hit3d = hits[0];
         hit2d = _this.layerPlane.rebase(_this.layerPlane.project(hit3d));
         return _this.nodes.push({
+          layerId: _this.currentLayer.id,
           position: hit3d,
           position2d: hit2d
         });
