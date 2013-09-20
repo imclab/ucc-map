@@ -79,8 +79,8 @@ define (require) ->
           @dragRotationBaseAngle = angle #-> rotateAngleBase
         dragRotationDiffAngle = angle - @dragRotationBaseAngle
         @rotation = @dragRotationStartAngle + dragRotationDiffAngle
-        u = cos(@rotation / 180 * PI)
-        v = sin(@rotation / 180 * PI)
+        u = cos((@rotation + 90)/ 180 * PI)
+        v = sin((@rotation + 90)/ 180 * PI)
         newUp = new Vec3(
           @dragStartCameraRight.x * u +  @dragStartCameraUp.x * v
           @dragStartCameraRight.y * u +  @dragStartCameraUp.y * v

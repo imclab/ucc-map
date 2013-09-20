@@ -101,8 +101,8 @@ define(function(require) {
         }
         dragRotationDiffAngle = angle - this.dragRotationBaseAngle;
         this.rotation = this.dragRotationStartAngle + dragRotationDiffAngle;
-        u = cos(this.rotation / 180 * PI);
-        v = sin(this.rotation / 180 * PI);
+        u = cos((this.rotation + 90) / 180 * PI);
+        v = sin((this.rotation + 90) / 180 * PI);
         newUp = new Vec3(this.dragStartCameraRight.x * u + this.dragStartCameraUp.x * v, this.dragStartCameraRight.y * u + this.dragStartCameraUp.y * v, this.dragStartCameraRight.z * u + this.dragStartCameraUp.z * v).normalize();
         return this.camera.setUp(newUp);
       }
