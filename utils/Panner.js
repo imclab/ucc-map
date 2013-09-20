@@ -36,6 +36,7 @@ define(function(require) {
       dragRotationBaseAngle = 0;
       this.dragRotationInit = false;
       this.dragRotationStartAngle = 0;
+      this.dragging = false;
       this.addEventHanlders();
     }
 
@@ -46,13 +47,17 @@ define(function(require) {
         if (e.handled || !_this.enabled) {
           return;
         }
+        _this.dragging = true;
         return _this.down(e.x, _this.window.height - e.y, e);
       });
       this.window.on('mouseDragged', function(e) {
-        if (e.handled || !_this.enabled) {
+        if (e.handled || !_this.enabled || !_this.dragging) {
           return;
         }
         return _this.drag(e.x, _this.window.height - e.y, e);
+      });
+      this.window.on('leftMouseUp', function(e) {
+        return _this.dragging = false;
       });
       return this.window.on('scrollWheel', function(e) {
         if (e.handled || !_this.enabled) {

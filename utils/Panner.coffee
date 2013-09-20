@@ -32,17 +32,22 @@ define (require) ->
       dragRotationBaseAngle = 0
       @dragRotationInit = false
       @dragRotationStartAngle = 0
+      @dragging = false
 
       @addEventHanlders()
 
     addEventHanlders: () ->
       @window.on 'leftMouseDown', (e) =>
         return if e.handled || !@enabled
+        @dragging = true
         @down(e.x, @window.height - e.y, e) #we flip the y coord to make rotating camera work
 
       @window.on 'mouseDragged', (e) =>
-        return if e.handled || !@enabled
+        return if e.handled || !@enabled || !@dragging
         @drag(e.x, @window.height - e.y, e) #we flip the y coord to make rotating camera work
+
+      @window.on 'leftMouseUp', (e) =>
+        @dragging = false
 
       @window.on 'scrollWheel', (e) =>
         return if e.handled || !@enabled
