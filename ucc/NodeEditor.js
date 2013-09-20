@@ -19,9 +19,10 @@ define(function(require) {
       this.currentLayer = null;
       this.enabled = false;
       this.nodes = [];
+      this.connections = [];
       this.lineBuilder = new LineBuilder();
       this.lineBuilder.addLine(new Vec3(0, -1, 0), new Vec3(0, 1, 0), Color.Red);
-      this.mesh = new Mesh(this.lineBuilder, new ShowColors(), {
+      this.lineMesh = new Mesh(this.lineBuilder, new ShowColors(), {
         useEdges: true
       });
       this.nodeRadius = 0.003;
@@ -128,8 +129,62 @@ define(function(require) {
             return _this.save('nodes.txt');
           case 'L':
             return _this.load('nodes.txt');
+          case 'j':
+            return _this.joinNodes(true);
+          case 'J':
+            return _this.joinNodes(false);
         }
       });
+    };
+
+    NodeEditor.prototype.getConnection = function(a, b) {
+      var connection;
+
+      connection = this.connections.filter(function(conn) {
+        return (conn.a === a && conn.b === b) || (conn.a === b && conn.b === a);
+      });
+      if (connection.length > 0) {
+        return connection[0];
+      } else {
+        return null;
+      }
+    };
+
+    NodeEditor.prototype.joinNodes = function(connect) {
+      var existingConnection, selectedNodes;
+
+      selectedNodes = this.nodes.filter(function(node) {
+        return node.selected;
+      });
+      if (selectedNodes.length === 2) {
+        existingConnection = this.getConnection(selectedNodes[0], selectedNodes[1]);
+        if (connect) {
+          if (!existingConnection) {
+            this.connections.push({
+              a: selectedNodes[0],
+              b: selectedNodes[1]
+            });
+            selectedNodes[0].selected = false;
+            return this.updateConnectionsMesh();
+          }
+        } else if (existingConnection) {
+          this.connections.splice(this.connections.indexOf(existingConnection), 1);
+          return this.updateConnectionsMesh();
+        }
+      }
+    };
+
+    NodeEditor.prototype.updateConnectionsMesh = function() {
+      var connection, _i, _len, _ref3, _results;
+
+      this.lineBuilder.reset();
+      _ref3 = this.connections;
+      _results = [];
+      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+        connection = _ref3[_i];
+        _results.push(this.lineBuilder.addLine(connection.a.position, connection.b.position, Color.Red));
+      }
+      return _results;
     };
 
     NodeEditor.prototype.setCurrentLayer = function(layer) {
@@ -137,7 +192,7 @@ define(function(require) {
     };
 
     NodeEditor.prototype.draw = function(camera) {
-      this.mesh.draw(camera);
+      this.lineMesh.draw(camera);
       this.wireCube.material.uniforms.color = Color.Red;
       this.wireCube.drawInstances(camera, this.nodes.filter(function(node) {
         return !node.selected;
