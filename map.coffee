@@ -84,6 +84,8 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
             for drawable in @scene.drawables
               drawable.enabled = true
 
+      @onFocusLayerChange(1)
+
     onFocusLayerChange: (layerIndex) ->
       for drawable, i in @scene.drawables
         drawable.enabled = (i == layerIndex) || (0 == layerIndex)

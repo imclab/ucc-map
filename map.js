@@ -84,7 +84,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.panner = new Panner(this, this.camera);
       this.panner.enabled = false;
       this.glx = new GLX(this.gl);
-      return this.on('keyDown', function(e) {
+      this.on('keyDown', function(e) {
         var drawable, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref1, _ref2, _ref3, _ref4, _ref5, _results, _results1, _results2, _results3, _results4;
 
         switch (e.str) {
@@ -135,6 +135,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
             return _results4;
         }
       });
+      return this.onFocusLayerChange(1);
     },
     onFocusLayerChange: function(layerIndex) {
       var drawable, i, selectedLayer, _i, _len, _ref1;
