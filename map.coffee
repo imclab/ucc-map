@@ -46,8 +46,8 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
 
       @gui.addRadioList('Focus on', this, 'focusLayerId', @layers, (e) => @onFocusLayerChange(e))
 
-      @layers = @layers.map (layerData) =>
-        layer = new Layer(layerData.img)
+      @layers = @layers.map (layerData, id) =>
+        layer = new Layer(layerData.img, id)
         layer.position = new Vec3(Math.random()*0.5-0.25, -0.02 + layerData.level * @layerDistance, Math.random()*0.5-0.25)
         layer.rotationAngle = 0;
         layer.name = layerData.img

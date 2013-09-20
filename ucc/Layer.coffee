@@ -10,7 +10,7 @@ define (require) ->
   class Layer
     selected: false
     alpha: 1
-    constructor: (imageFile) ->
+    constructor: (imageFile, @id) ->
       @position = new Vec3(0, 0, 0)
       @scale = new Vec3(1, 1, 1)
       @up = new Vec3(0, 1, 0)
