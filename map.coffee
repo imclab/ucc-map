@@ -98,6 +98,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       @camera.setUp(new Vec3(0, 0, 1))
       @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)
       @camera.updateMatrices()
+      @panner.cameraUp.setVec3(new Vec3(0, 0, 1))
       @panner.updateCamera() if @panner.enabled
       @arcball.updateCamera() if @arcball.enabled
 
