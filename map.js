@@ -81,6 +81,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.layersController.enabled = true;
       this.nodeEditor = new NodeEditor(this, this.camera);
       this.nodeEditor.enabled = false;
+      this.scene.add(this.nodeEditor);
       this.arcball = new Arcball(this, this.camera);
       this.arcball.enabled = true;
       this.panner = new Panner(this, this.camera);

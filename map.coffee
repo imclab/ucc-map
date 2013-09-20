@@ -61,6 +61,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
 
       @nodeEditor = new NodeEditor(this, @camera)
       @nodeEditor.enabled = false
+      @scene.add(@nodeEditor)
       @arcball = new Arcball(this, @camera)
       @arcball.enabled = true
       @panner = new Panner(this, @camera)
