@@ -16,7 +16,7 @@ define (require) ->
       @connections = []
 
       @lineBuilder = new LineBuilder()
-      @lineBuilder.addLine(new Vec3(0, -1, 0), new Vec3(0, 1, 0), Color.Red)
+      @lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), Color.Red)
       @lineMesh = new Mesh(@lineBuilder, new ShowColors(), { useEdges: true})
 
       @nodeRadius = 0.003

@@ -21,7 +21,7 @@ define(function(require) {
       this.nodes = [];
       this.connections = [];
       this.lineBuilder = new LineBuilder();
-      this.lineBuilder.addLine(new Vec3(0, -1, 0), new Vec3(0, 1, 0), Color.Red);
+      this.lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), Color.Red);
       this.lineMesh = new Mesh(this.lineBuilder, new ShowColors(), {
         useEdges: true
       });
