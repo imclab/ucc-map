@@ -1,6 +1,7 @@
 define (require) ->
   { Vec2, Vec3 } = require('pex/geom')
   { Time } = require('pex/utils')
+  { PI, cos, sin } = Math
 
   class Panner
     constructor: (window, camera, distance) ->
@@ -23,6 +24,10 @@ define (require) ->
       @dragStart = new Vec3()
       @dragDelta = new Vec3()
       @dragScale = new Vec3()
+      @dragStartCameraUp = new Vec3()
+      @dragStartCameraRight = new Vec3()
+      @up = null
+      @cameraUp = new Vec3()
       @rotation = 0
       dragRotationBaseAngle = 0
       @dragRotationInit = false
@@ -53,7 +58,8 @@ define (require) ->
       @dragStart.setVec3(hits[0])
       @dragDelta.asSub(hits[0], @dragCenter)
       @dragRotationInit = false
-      @dragRotationStartAngle = @rotation
+      @dragStartCameraUp.setVec3(@camera.getUp())
+      @dragStartCameraRight.asCross(@dragStartCameraUp, @up) # up x forward
 
     drag: (x, y, e) ->
       ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
@@ -72,8 +78,16 @@ define (require) ->
           @dragRotationInit = true
           @dragRotationBaseAngle = angle #-> rotateAngleBase
         dragRotationDiffAngle = angle - @dragRotationBaseAngle
-        @rotation = @dragRotationStartAngle + dragRotationDiffAngle
-        console.log(@rotation)
+        #@rotation = @dragRotationStartAngle + dragRotationDiffAngle
+        @rotation = dragRotationDiffAngle
+        u = cos(@rotation / 180 * PI)
+        v = sin(@rotation / 180 * PI)
+        newUp = new Vec3(
+          @dragStartCameraRight.x * u +  @dragStartCameraUp.x * v
+          @dragStartCameraRight.y * u +  @dragStartCameraUp.y * v
+          @dragStartCameraRight.z * u +  @dragStartCameraUp.z * v
+        )
+        @camera.setUp(newUp);
 
     updateCamera: () ->
       if !@up
