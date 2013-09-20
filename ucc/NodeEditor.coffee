@@ -57,6 +57,10 @@ define (require) ->
         return if e.handled || !@enabled
         @cancelNextClick = false
         if @hoverNode
+          selectedNodes = @nodes.filter((node) -> node.selected)
+          if !e.shift
+            for node in selectedNodes
+              node.selected = false if node != @hoverNode
           @hoverNode.selected = !@hoverNode.selected
           e.handled = true
           @cancelNextClick = true
@@ -119,6 +123,7 @@ define (require) ->
               b: selectedNodes[1]
             })
             selectedNodes[0].selected = false
+            selectedNodes[1].selected = false
             @updateConnectionsMesh()
         else if existingConnection
           @connections.splice(@connections.indexOf(existingConnection), 1)

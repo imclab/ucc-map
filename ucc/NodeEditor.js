@@ -77,11 +77,24 @@ define(function(require) {
       var _this = this;
 
       this.window.on('leftMouseDown', function(e) {
+        var node, selectedNodes, _i, _len;
+
         if (e.handled || !_this.enabled) {
           return;
         }
         _this.cancelNextClick = false;
         if (_this.hoverNode) {
+          selectedNodes = _this.nodes.filter(function(node) {
+            return node.selected;
+          });
+          if (!e.shift) {
+            for (_i = 0, _len = selectedNodes.length; _i < _len; _i++) {
+              node = selectedNodes[_i];
+              if (node !== _this.hoverNode) {
+                node.selected = false;
+              }
+            }
+          }
           _this.hoverNode.selected = !_this.hoverNode.selected;
           e.handled = true;
           return _this.cancelNextClick = true;
@@ -182,6 +195,7 @@ define(function(require) {
               b: selectedNodes[1]
             });
             selectedNodes[0].selected = false;
+            selectedNodes[1].selected = false;
             return this.updateConnectionsMesh();
           }
         } else if (existingConnection) {
