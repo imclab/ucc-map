@@ -3,7 +3,8 @@ define (require) ->
   { Mesh } = require('pex/gl')
   { LineBuilder, Cube } = require('pex/geom/gen')
   { Color } = require('pex/color')
-  { Vec3 } = require('pex/geom')
+  { Vec2, Vec3 } = require('pex/geom')
+  { IO } = require('pex/sys')
   Plane = require('geom/Plane')
 
   class NodeEditor
@@ -21,6 +22,18 @@ define (require) ->
       @wireCube = new Mesh(cube, new SolidColor({color:Color.Red}), { useEdges: true })
 
       @addEventHanlders()
+
+    save: (fileName) ->
+      IO.saveTextFile(fileName, JSON.stringify(@nodes))
+
+    load: (fileName) ->
+      IO.loadTextFile(fileName, (data) =>
+        @nodes = JSON.parse(data).map (nodeData) -> {
+          layerId: nodeData.layerId,
+          position: new Vec3(nodeData.position.x, nodeData.position.y, nodeData.position.z)
+          position2d: new Vec2(nodeData.position2d.x, nodeData.position2d.y)
+        }
+      )
 
     addEventHanlders: () ->
       @window.on 'leftMouseDown', (e) =>
@@ -45,6 +58,12 @@ define (require) ->
       @window.on 'mouseDragged', (e) =>
         @cancelNextClick = true
         return if e.handled || !@enable
+
+      @window.on 'keyDown', (e) =>
+        return if !@enabled
+        switch e.str
+          when 'S' then @save('nodes.txt')
+          when 'L' then @load('nodes.txt')
 
     setCurrentLayer: (layer) ->
       @currentLayer = layer
