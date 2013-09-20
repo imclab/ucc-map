@@ -56,6 +56,10 @@ define (require) ->
       @window.on 'leftMouseDown', (e) =>
         return if e.handled || !@enabled
         @cancelNextClick = false
+
+      @window.on 'leftMouseUp', (e) =>
+        return if e.handled || !@enabled || @cancelNextClick
+
         if @hoverNode
           selectedNodes = @nodes.filter((node) -> node.selected)
           if !e.shift
@@ -64,22 +68,19 @@ define (require) ->
           @hoverNode.selected = !@hoverNode.selected
           e.handled = true
           @cancelNextClick = true
-
-      @window.on 'leftMouseUp', (e) =>
-        console.log('cancelNextClick', @cancelNextClick)
-        return if e.handled || !@enabled || @cancelNextClick
-        forward = @camera.getTarget().dup().sub(@camera.getPosition()).normalize()
-        @layerPlane = new Plane(@currentLayer.position, forward)
-        ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
-        hits = ray.hitTestPlane(@layerPlane.point, @layerPlane.N)
-        hit3d = hits[0]
-        hit2d = @layerPlane.rebase(@layerPlane.project(hit3d))
-        @nodes.push({
-          layerId: @currentLayer.id
-          position: hit3d,
-          position2d: hit2d,
-          color: Color.Green
-        })
+        else
+          forward = @camera.getTarget().dup().sub(@camera.getPosition()).normalize()
+          @layerPlane = new Plane(@currentLayer.position, forward)
+          ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
+          hits = ray.hitTestPlane(@layerPlane.point, @layerPlane.N)
+          hit3d = hits[0]
+          hit2d = @layerPlane.rebase(@layerPlane.project(hit3d))
+          @nodes.push({
+            layerId: @currentLayer.id
+            position: hit3d,
+            position2d: hit2d,
+            color: Color.Green
+          })
 
       @window.on 'mouseMoved', (e) =>
         forward = @camera.getTarget().dup().sub(@camera.getPosition()).normalize()
@@ -104,6 +105,21 @@ define (require) ->
           when 'L' then @load('nodes.txt')
           when 'j' then @joinNodes(true)
           when 'J' then @joinNodes(false)
+        switch e.keyCode
+          when 51 then @deleteNodes()
+
+    deleteNodes: () ->
+      selectedNodes = @nodes.filter((node) -> node.selected)
+      for node in selectedNodes
+        nodeIndex = @nodes.indexOf(node)
+        nodeConnections = @connections.filter (c) -> c.a == node || c.b == node
+        for connection in nodeConnections
+          connectionIndex = @connections.indexOf(connection)
+          @connections.splice(connectionIndex, 1)
+        @nodes.splice(nodeIndex, 1)
+      @hoverNode = null
+      @draggedNode = null
+      @updateConnectionsMesh()
 
     getConnection: (a, b) ->
       connection = @connections.filter (conn) ->

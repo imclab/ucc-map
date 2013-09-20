@@ -77,12 +77,17 @@ define(function(require) {
       var _this = this;
 
       this.window.on('leftMouseDown', function(e) {
-        var node, selectedNodes, _i, _len;
-
         if (e.handled || !_this.enabled) {
           return;
         }
-        _this.cancelNextClick = false;
+        return _this.cancelNextClick = false;
+      });
+      this.window.on('leftMouseUp', function(e) {
+        var forward, hit2d, hit3d, hits, node, ray, selectedNodes, _i, _len;
+
+        if (e.handled || !_this.enabled || _this.cancelNextClick) {
+          return;
+        }
         if (_this.hoverNode) {
           selectedNodes = _this.nodes.filter(function(node) {
             return node.selected;
@@ -98,27 +103,20 @@ define(function(require) {
           _this.hoverNode.selected = !_this.hoverNode.selected;
           e.handled = true;
           return _this.cancelNextClick = true;
+        } else {
+          forward = _this.camera.getTarget().dup().sub(_this.camera.getPosition()).normalize();
+          _this.layerPlane = new Plane(_this.currentLayer.position, forward);
+          ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
+          hits = ray.hitTestPlane(_this.layerPlane.point, _this.layerPlane.N);
+          hit3d = hits[0];
+          hit2d = _this.layerPlane.rebase(_this.layerPlane.project(hit3d));
+          return _this.nodes.push({
+            layerId: _this.currentLayer.id,
+            position: hit3d,
+            position2d: hit2d,
+            color: Color.Green
+          });
         }
-      });
-      this.window.on('leftMouseUp', function(e) {
-        var forward, hit2d, hit3d, hits, ray;
-
-        console.log('cancelNextClick', _this.cancelNextClick);
-        if (e.handled || !_this.enabled || _this.cancelNextClick) {
-          return;
-        }
-        forward = _this.camera.getTarget().dup().sub(_this.camera.getPosition()).normalize();
-        _this.layerPlane = new Plane(_this.currentLayer.position, forward);
-        ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
-        hits = ray.hitTestPlane(_this.layerPlane.point, _this.layerPlane.N);
-        hit3d = hits[0];
-        hit2d = _this.layerPlane.rebase(_this.layerPlane.project(hit3d));
-        return _this.nodes.push({
-          layerId: _this.currentLayer.id,
-          position: hit3d,
-          position2d: hit2d,
-          color: Color.Green
-        });
       });
       this.window.on('mouseMoved', function(e) {
         var forward, hit3d, hits, i, node, ray, _i, _len, _ref3, _results;
@@ -156,15 +154,46 @@ define(function(require) {
         }
         switch (e.str) {
           case 'S':
-            return _this.save('nodes.txt');
+            _this.save('nodes.txt');
+            break;
           case 'L':
-            return _this.load('nodes.txt');
+            _this.load('nodes.txt');
+            break;
           case 'j':
-            return _this.joinNodes(true);
+            _this.joinNodes(true);
+            break;
           case 'J':
-            return _this.joinNodes(false);
+            _this.joinNodes(false);
+        }
+        switch (e.keyCode) {
+          case 51:
+            return _this.deleteNodes();
         }
       });
+    };
+
+    NodeEditor.prototype.deleteNodes = function() {
+      var connection, connectionIndex, node, nodeConnections, nodeIndex, selectedNodes, _i, _j, _len, _len1;
+
+      selectedNodes = this.nodes.filter(function(node) {
+        return node.selected;
+      });
+      for (_i = 0, _len = selectedNodes.length; _i < _len; _i++) {
+        node = selectedNodes[_i];
+        nodeIndex = this.nodes.indexOf(node);
+        nodeConnections = this.connections.filter(function(c) {
+          return c.a === node || c.b === node;
+        });
+        for (_j = 0, _len1 = nodeConnections.length; _j < _len1; _j++) {
+          connection = nodeConnections[_j];
+          connectionIndex = this.connections.indexOf(connection);
+          this.connections.splice(connectionIndex, 1);
+        }
+        this.nodes.splice(nodeIndex, 1);
+      }
+      this.hoverNode = null;
+      this.draggedNode = null;
+      return this.updateConnectionsMesh();
     };
 
     NodeEditor.prototype.getConnection = function(a, b) {
