@@ -88,16 +88,16 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.panner.enabled = false;
       this.glx = new GLX(this.gl);
       this.on('keyDown', function(e) {
-        var drawable, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref1, _ref2, _ref3, _ref4, _ref5, _results, _results1, _results2, _results3, _results4;
+        var drawable, layer, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref1, _ref2, _ref3, _ref4, _ref5, _results, _results1, _results2, _results3, _results4;
 
         switch (e.str) {
           case 'x':
             _this.xray = !_this.xray;
-            _ref1 = _this.scene.drawables;
+            _ref1 = _this.layers;
             _results = [];
             for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-              drawable = _ref1[_i];
-              _results.push(drawable.planeMesh.material.uniforms.xray = _this.xray);
+              layer = _ref1[_i];
+              _results.push(layer.planeMesh.material.uniforms.xray = _this.xray);
             }
             return _results;
             break;

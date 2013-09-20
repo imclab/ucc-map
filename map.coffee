@@ -73,8 +73,8 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
         switch e.str
           when 'x'
             @xray = !@xray
-            for drawable in @scene.drawables
-              drawable.planeMesh.material.uniforms.xray = @xray
+            for layer in @layers
+              layer.planeMesh.material.uniforms.xray = @xray
           when '1'
             for drawable in @scene.drawables
               drawable.enabled = drawable.level == 0
