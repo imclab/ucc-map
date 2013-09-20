@@ -9,7 +9,7 @@ pex = pex || require('./lib/pex')
 { MathUtils } = pex.utils
 { GUI } = pex.gui
 
-pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner'], (GLX, Layer, LayersController, Panner) ->
+pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'geom/Plane'], (GLX, Layer, LayersController, Panner, Plane) ->
   pex.sys.Window.create
     settings:
       width: 1280
@@ -36,11 +36,11 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner'], (
         { img: 'assets/satellite.jpg', level: -1, enabled: false, name: 'ALL', value:0 }
         { img: 'assets/A0-plan.png',   level:  0, enabled: true , name: 'A 0' , value:1 }
         { img: 'assets/A1-plan.png',   level:  1, enabled: true , name: 'A 1' , value:2 }
-        { img: 'assets/B0-plan.png',   level:  0, enabled: true , name: 'B 0' , value:3 }
-        { img: 'assets/B1-plan.png',   level:  1, enabled: true , name: 'B 1' , value:4 }
-        { img: 'assets/C0-plan.png',   level:  0, enabled: true , name: 'C 0' , value:5 }
-        { img: 'assets/C1-plan.png',   level:  1, enabled: true , name: 'C 1' , value:6 }
-        { img: 'assets/C2-plan.png',   level:  2, enabled: true , name: 'C 2' , value:7 }
+        # { img: 'assets/B0-plan.png',   level:  0, enabled: true , name: 'B 0' , value:3 }
+        # { img: 'assets/B1-plan.png',   level:  1, enabled: true , name: 'B 1' , value:4 }
+        # { img: 'assets/C0-plan.png',   level:  0, enabled: true , name: 'C 0' , value:5 }
+        # { img: 'assets/C1-plan.png',   level:  1, enabled: true , name: 'C 1' , value:6 }
+        # { img: 'assets/C2-plan.png',   level:  2, enabled: true , name: 'C 2' , value:7 }
       ]
 
       @gui.addRadioList('Focus on', this, 'focusLayerId', @layers, (e) => @onFocusLayerChange(e))
@@ -56,11 +56,12 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner'], (
         layer
 
       @layersController = new LayersController(this, @scene, @camera)
-      @layersController.enabled = false
+      @layersController.enabled = true
 
       @arcball = new Arcball(this, @camera)
+      @arcball.enabled = true
       @panner = new Panner(this, @camera)
-      @arcball.enabled = false
+      @panner.enabled = false
       @glx = new GLX(@gl)
 
       @on 'keyDown', (e) =>
@@ -86,6 +87,10 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner'], (
       for drawable, i in @scene.drawables
         drawable.enabled = (i == layerIndex) || (0 == layerIndex)
       selectedLayer = @scene.drawables[layerIndex]
+
+      @arcball.enabled = (layerIndex == 0)
+      @layersController.enabled = (layerIndex == 0)
+      @panner.enabled = (layerIndex != 0)
       @camera.setTarget(selectedLayer.position)
       @camera.setUp(new Vec3(0, 0, 1))
       @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)

@@ -19,7 +19,7 @@ MathUtils = pex.utils.MathUtils;
 
 GUI = pex.gui.GUI;
 
-pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner'], function(GLX, Layer, LayersController, Panner) {
+pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'geom/Plane'], function(GLX, Layer, LayersController, Panner, Plane) {
   return pex.sys.Window.create({
     settings: {
       width: 1280,
@@ -60,36 +60,6 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner'], 
           enabled: true,
           name: 'A 1',
           value: 2
-        }, {
-          img: 'assets/B0-plan.png',
-          level: 0,
-          enabled: true,
-          name: 'B 0',
-          value: 3
-        }, {
-          img: 'assets/B1-plan.png',
-          level: 1,
-          enabled: true,
-          name: 'B 1',
-          value: 4
-        }, {
-          img: 'assets/C0-plan.png',
-          level: 0,
-          enabled: true,
-          name: 'C 0',
-          value: 5
-        }, {
-          img: 'assets/C1-plan.png',
-          level: 1,
-          enabled: true,
-          name: 'C 1',
-          value: 6
-        }, {
-          img: 'assets/C2-plan.png',
-          level: 2,
-          enabled: true,
-          name: 'C 2',
-          value: 7
         }
       ];
       this.gui.addRadioList('Focus on', this, 'focusLayerId', this.layers, function(e) {
@@ -108,10 +78,11 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner'], 
         return layer;
       });
       this.layersController = new LayersController(this, this.scene, this.camera);
-      this.layersController.enabled = false;
+      this.layersController.enabled = true;
       this.arcball = new Arcball(this, this.camera);
+      this.arcball.enabled = true;
       this.panner = new Panner(this, this.camera);
-      this.arcball.enabled = false;
+      this.panner.enabled = false;
       this.glx = new GLX(this.gl);
       return this.on('keyDown', function(e) {
         var drawable, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref1, _ref2, _ref3, _ref4, _ref5, _results, _results1, _results2, _results3, _results4;
@@ -174,6 +145,9 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner'], 
         drawable.enabled = (i === layerIndex) || (0 === layerIndex);
       }
       selectedLayer = this.scene.drawables[layerIndex];
+      this.arcball.enabled = layerIndex === 0;
+      this.layersController.enabled = layerIndex === 0;
+      this.panner.enabled = layerIndex !== 0;
       this.camera.setTarget(selectedLayer.position);
       this.camera.setUp(new Vec3(0, 0, 1));
       this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
