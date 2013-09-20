@@ -56,18 +56,26 @@ define (require) ->
       @window.on 'leftMouseDown', (e) =>
         return if e.handled || !@enabled
         @cancelNextClick = false
+        @draggedNode = @hoverNode
 
       @window.on 'leftMouseUp', (e) =>
-        return if e.handled || !@enabled || @cancelNextClick
-
+        return if e.handled || !@enabled
+        selectedNodes = @nodes.filter((node) -> node.selected)
+        if @cancelNextClick
+          if !e.shift
+            for node in selectedNodes
+              node.selected = false if node != @hoverNode
+          if @draggedNode then @draggedNode.selected = true
+          @draggedNode = null
+          return
         if @hoverNode
-          selectedNodes = @nodes.filter((node) -> node.selected)
           if !e.shift
             for node in selectedNodes
               node.selected = false if node != @hoverNode
           @hoverNode.selected = !@hoverNode.selected
           e.handled = true
           @cancelNextClick = true
+          @draggedNode = null
         else
           forward = @camera.getTarget().dup().sub(@camera.getPosition()).normalize()
           @layerPlane = new Plane(@currentLayer.position, forward)
@@ -96,7 +104,16 @@ define (require) ->
 
       @window.on 'mouseDragged', (e) =>
         @cancelNextClick = true
-        return if e.handled || !@enable
+        return if e.handled || !@enabled
+        if @draggedNode
+          forward = @camera.getTarget().dup().sub(@camera.getPosition()).normalize()
+          @layerPlane = new Plane(@currentLayer.position, forward)
+          ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
+          hits = ray.hitTestPlane(@layerPlane.point, @layerPlane.N)
+          hit3d = hits[0]
+          @draggedNode.position = hit3d
+          e.handled = true
+          @updateConnectionsMesh()
 
       @window.on 'keyDown', (e) =>
         return if !@enabled

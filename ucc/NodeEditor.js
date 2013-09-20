@@ -80,18 +80,19 @@ define(function(require) {
         if (e.handled || !_this.enabled) {
           return;
         }
-        return _this.cancelNextClick = false;
+        _this.cancelNextClick = false;
+        return _this.draggedNode = _this.hoverNode;
       });
       this.window.on('leftMouseUp', function(e) {
-        var forward, hit2d, hit3d, hits, node, ray, selectedNodes, _i, _len;
+        var forward, hit2d, hit3d, hits, node, ray, selectedNodes, _i, _j, _len, _len1;
 
-        if (e.handled || !_this.enabled || _this.cancelNextClick) {
+        if (e.handled || !_this.enabled) {
           return;
         }
-        if (_this.hoverNode) {
-          selectedNodes = _this.nodes.filter(function(node) {
-            return node.selected;
-          });
+        selectedNodes = _this.nodes.filter(function(node) {
+          return node.selected;
+        });
+        if (_this.cancelNextClick) {
           if (!e.shift) {
             for (_i = 0, _len = selectedNodes.length; _i < _len; _i++) {
               node = selectedNodes[_i];
@@ -100,9 +101,25 @@ define(function(require) {
               }
             }
           }
+          if (_this.draggedNode) {
+            _this.draggedNode.selected = true;
+          }
+          _this.draggedNode = null;
+          return;
+        }
+        if (_this.hoverNode) {
+          if (!e.shift) {
+            for (_j = 0, _len1 = selectedNodes.length; _j < _len1; _j++) {
+              node = selectedNodes[_j];
+              if (node !== _this.hoverNode) {
+                node.selected = false;
+              }
+            }
+          }
           _this.hoverNode.selected = !_this.hoverNode.selected;
           e.handled = true;
-          return _this.cancelNextClick = true;
+          _this.cancelNextClick = true;
+          return _this.draggedNode = null;
         } else {
           forward = _this.camera.getTarget().dup().sub(_this.camera.getPosition()).normalize();
           _this.layerPlane = new Plane(_this.currentLayer.position, forward);
@@ -143,9 +160,21 @@ define(function(require) {
         return _results;
       });
       this.window.on('mouseDragged', function(e) {
-        _this.cancelNextClick = true;
-        if (e.handled || !_this.enable) {
+        var forward, hit3d, hits, ray;
 
+        _this.cancelNextClick = true;
+        if (e.handled || !_this.enabled) {
+          return;
+        }
+        if (_this.draggedNode) {
+          forward = _this.camera.getTarget().dup().sub(_this.camera.getPosition()).normalize();
+          _this.layerPlane = new Plane(_this.currentLayer.position, forward);
+          ray = _this.camera.getWorldRay(e.x, e.y, _this.window.width, _this.window.height);
+          hits = ray.hitTestPlane(_this.layerPlane.point, _this.layerPlane.N);
+          hit3d = hits[0];
+          _this.draggedNode.position = hit3d;
+          e.handled = true;
+          return _this.updateConnectionsMesh();
         }
       });
       return this.window.on('keyDown', function(e) {
