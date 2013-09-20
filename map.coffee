@@ -59,10 +59,13 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       @layersController = new LayersController(this, @scene, @camera)
       @layersController.enabled = true
 
+      @nodeEditor = new NodeEditor(this, @camera)
+      @nodeEditor.enabled = false
       @arcball = new Arcball(this, @camera)
       @arcball.enabled = true
       @panner = new Panner(this, @camera)
       @panner.enabled = false
+
       @glx = new GLX(@gl)
 
       @on 'keyDown', (e) =>
@@ -94,6 +97,8 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       @arcball.enabled = (layerIndex == 0)
       @layersController.enabled = (layerIndex == 0)
       @panner.enabled = (layerIndex != 0)
+      @nodeEditor.enabled = (layerIndex != 0)
+      @nodeEditor.currentLayer = @layers[layerIndex]
       @camera.getTarget().setVec3(selectedLayer.position)
       @camera.setUp(new Vec3(0, 0, 1))
       @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)

@@ -79,6 +79,8 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       });
       this.layersController = new LayersController(this, this.scene, this.camera);
       this.layersController.enabled = true;
+      this.nodeEditor = new NodeEditor(this, this.camera);
+      this.nodeEditor.enabled = false;
       this.arcball = new Arcball(this, this.camera);
       this.arcball.enabled = true;
       this.panner = new Panner(this, this.camera);
@@ -149,6 +151,8 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.arcball.enabled = layerIndex === 0;
       this.layersController.enabled = layerIndex === 0;
       this.panner.enabled = layerIndex !== 0;
+      this.nodeEditor.enabled = layerIndex !== 0;
+      this.nodeEditor.currentLayer = this.layers[layerIndex];
       this.camera.getTarget().setVec3(selectedLayer.position);
       this.camera.setUp(new Vec3(0, 0, 1));
       this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
