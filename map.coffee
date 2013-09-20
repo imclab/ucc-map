@@ -91,7 +91,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       @arcball.enabled = (layerIndex == 0)
       @layersController.enabled = (layerIndex == 0)
       @panner.enabled = (layerIndex != 0)
-      @camera.setTarget(selectedLayer.position)
+      @camera.getTarget().setVec3(selectedLayer.position)
       @camera.setUp(new Vec3(0, 0, 1))
       @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)
       console.log(@camera.target, @camera.up, @camera.position)
