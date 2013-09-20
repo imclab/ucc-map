@@ -62,5 +62,7 @@ define (require) ->
         @dragCenter.setVec3(@camera.getTarget())
 
     updateCamera: () ->
+      if !@up
+        @up = Vec3.create().asSub(@camera.getPosition(), @camera.getTarget()).normalize()
       @camera.getPosition().setVec3(@up).scale(@distance).add(@camera.getTarget())
       @camera.updateMatrices()

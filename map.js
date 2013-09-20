@@ -151,7 +151,13 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.camera.getTarget().setVec3(selectedLayer.position);
       this.camera.setUp(new Vec3(0, 0, 1));
       this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
-      return this.camera.updateMatrices();
+      this.camera.updateMatrices();
+      if (this.panner.enabled) {
+        this.panner.updateCamera();
+      }
+      if (this.arcball.enabled) {
+        return this.arcball.updateCamera();
+      }
     },
     draw: function() {
       this.glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black);

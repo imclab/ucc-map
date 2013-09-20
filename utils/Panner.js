@@ -81,6 +81,9 @@ define(function(require) {
     };
 
     Panner.prototype.updateCamera = function() {
+      if (!this.up) {
+        this.up = Vec3.create().asSub(this.camera.getPosition(), this.camera.getTarget()).normalize();
+      }
       this.camera.getPosition().setVec3(this.up).scale(this.distance).add(this.camera.getTarget());
       return this.camera.updateMatrices();
     };
