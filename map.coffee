@@ -99,7 +99,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       @layersController.enabled = (layerIndex == 0)
       @panner.enabled = (layerIndex != 0)
       @nodeEditor.enabled = (layerIndex != 0)
-      @nodeEditor.currentLayer = @layers[layerIndex]
+      @nodeEditor.setCurrentLayer(@layers[layerIndex])
       @camera.getTarget().setVec3(selectedLayer.position)
       @camera.setUp(new Vec3(0, 0, 1))
       @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)
