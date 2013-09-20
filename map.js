@@ -148,10 +148,9 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.arcball.enabled = layerIndex === 0;
       this.layersController.enabled = layerIndex === 0;
       this.panner.enabled = layerIndex !== 0;
-      this.camera.setTarget(selectedLayer.position);
+      this.camera.getTarget().setVec3(selectedLayer.position);
       this.camera.setUp(new Vec3(0, 0, 1));
       this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
-      console.log(this.camera.target, this.camera.up, this.camera.position);
       return this.camera.updateMatrices();
     },
     draw: function() {

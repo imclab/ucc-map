@@ -94,14 +94,12 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       @camera.getTarget().setVec3(selectedLayer.position)
       @camera.setUp(new Vec3(0, 0, 1))
       @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)
-      console.log(@camera.target, @camera.up, @camera.position)
       @camera.updateMatrices()
 
     draw: () ->
       @glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black)
       @layers[0].enabled = !@xray
       @layers[0].border.draw(@camera) if @xray
-
       @gl.enable(@gl.BLEND)
       @gl.blendFunc(@gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA)
       @scene.draw(@camera)

@@ -41,7 +41,6 @@ define (require) ->
 
     draw: (camera) ->
       if @planeMesh
-
         @rotation.setAxisAngle(@up, @rotationAngle)
         @planeMesh.material.uniforms.alpha = @alpha
         if !@position.equals(@planeMesh.position) || !@scale.equals(@planeMesh.scale) || !@rotation.equals(@planeMesh.rotation)
