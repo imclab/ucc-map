@@ -19,7 +19,7 @@ MathUtils = pex.utils.MathUtils;
 
 GUI = pex.gui.GUI;
 
-pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'geom/Plane'], function(GLX, Layer, LayersController, Panner, Plane) {
+pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'geom/Plane', 'ucc/NodeEditor'], function(GLX, Layer, LayersController, Panner, Plane, NodeEditor) {
   return pex.sys.Window.create({
     settings: {
       width: 1280,

@@ -9,7 +9,8 @@ pex = pex || require('./lib/pex')
 { MathUtils } = pex.utils
 { GUI } = pex.gui
 
-pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'geom/Plane'], (GLX, Layer, LayersController, Panner, Plane) ->
+pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'geom/Plane', 'ucc/NodeEditor'],
+(GLX, Layer, LayersController, Panner, Plane, NodeEditor) ->
   pex.sys.Window.create
     settings:
       width: 1280
