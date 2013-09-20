@@ -61,7 +61,6 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
 
       @nodeEditor = new NodeEditor(this, @camera)
       @nodeEditor.enabled = false
-      @scene.add(@nodeEditor)
       @arcball = new Arcball(this, @camera)
       @arcball.enabled = true
       @panner = new Panner(this, @camera)
@@ -115,5 +114,8 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       @gl.enable(@gl.BLEND)
       @gl.blendFunc(@gl.SRC_ALPHA, @gl.ONE_MINUS_SRC_ALPHA)
       @scene.draw(@camera)
+
+      @glx.enableDepthWriteAndRead(false, false)
+      @nodeEditor.draw(@camera)
 
       @gui.draw()

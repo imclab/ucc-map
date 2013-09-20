@@ -81,7 +81,6 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.layersController.enabled = true;
       this.nodeEditor = new NodeEditor(this, this.camera);
       this.nodeEditor.enabled = false;
-      this.scene.add(this.nodeEditor);
       this.arcball = new Arcball(this, this.camera);
       this.arcball.enabled = true;
       this.panner = new Panner(this, this.camera);
@@ -175,6 +174,8 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.gl.enable(this.gl.BLEND);
       this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
       this.scene.draw(this.camera);
+      this.glx.enableDepthWriteAndRead(false, false);
+      this.nodeEditor.draw(this.camera);
       return this.gui.draw();
     }
   });
