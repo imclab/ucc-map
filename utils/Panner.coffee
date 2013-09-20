@@ -23,7 +23,10 @@ define (require) ->
       @dragStart = new Vec3()
       @dragDelta = new Vec3()
       @dragScale = new Vec3()
-      @dragStartRotationAngle = 0
+      @rotation = 0
+      dragRotationBaseAngle = 0
+      @dragRotationInit = false
+      @dragRotationStartAngle = 0
 
       @addEventHanlders()
 
@@ -49,7 +52,8 @@ define (require) ->
       hits = ray.hitTestPlane(@dragCenter, @up)
       @dragStart.setVec3(hits[0])
       @dragDelta.asSub(hits[0], @dragCenter)
-
+      @dragRotationInit = false
+      @dragRotationStartAngle = @rotation
 
     drag: (x, y, e) ->
       ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
@@ -60,6 +64,16 @@ define (require) ->
         @updateCamera()
         #update drag center because @camera world ray influences hit test
         @dragCenter.setVec3(@camera.getTarget())
+      if e.option
+        @dragDelta.asSub(hits[0], @camera.getTarget())
+        radians = Math.atan2(-@dragDelta.z, @dragDelta.x)
+        angle = Math.floor(radians*180/Math.PI)
+        if !@dragRotationInit
+          @dragRotationInit = true
+          @dragRotationBaseAngle = angle #-> rotateAngleBase
+        dragRotationDiffAngle = angle - @dragRotationBaseAngle
+        @rotation = @dragRotationStartAngle + dragRotationDiffAngle
+        console.log(@rotation)
 
     updateCamera: () ->
       if !@up

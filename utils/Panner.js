@@ -6,6 +6,8 @@ define(function(require) {
   Time = require('pex/utils').Time;
   return Panner = (function() {
     function Panner(window, camera, distance) {
+      var dragRotationBaseAngle;
+
       this.window = window;
       this.camera = camera;
       this.enabled = true;
@@ -25,7 +27,10 @@ define(function(require) {
       this.dragStart = new Vec3();
       this.dragDelta = new Vec3();
       this.dragScale = new Vec3();
-      this.dragStartRotationAngle = 0;
+      this.rotation = 0;
+      dragRotationBaseAngle = 0;
+      this.dragRotationInit = false;
+      this.dragRotationStartAngle = 0;
       this.addEventHanlders();
     }
 
@@ -64,11 +69,13 @@ define(function(require) {
       this.up = Vec3.create().asSub(this.camera.getPosition(), this.camera.getTarget()).normalize();
       hits = ray.hitTestPlane(this.dragCenter, this.up);
       this.dragStart.setVec3(hits[0]);
-      return this.dragDelta.asSub(hits[0], this.dragCenter);
+      this.dragDelta.asSub(hits[0], this.dragCenter);
+      this.dragRotationInit = false;
+      return this.dragRotationStartAngle = this.rotation;
     };
 
     Panner.prototype.drag = function(x, y, e) {
-      var diff, hits, ray;
+      var angle, diff, dragRotationDiffAngle, hits, radians, ray;
 
       ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
       hits = ray.hitTestPlane(this.dragCenter, this.up);
@@ -76,7 +83,19 @@ define(function(require) {
         diff = Vec3.create().asSub(this.dragStart, hits[0]);
         this.camera.getTarget().setVec3(this.dragCenter).add(diff);
         this.updateCamera();
-        return this.dragCenter.setVec3(this.camera.getTarget());
+        this.dragCenter.setVec3(this.camera.getTarget());
+      }
+      if (e.option) {
+        this.dragDelta.asSub(hits[0], this.camera.getTarget());
+        radians = Math.atan2(-this.dragDelta.z, this.dragDelta.x);
+        angle = Math.floor(radians * 180 / Math.PI);
+        if (!this.dragRotationInit) {
+          this.dragRotationInit = true;
+          this.dragRotationBaseAngle = angle;
+        }
+        dragRotationDiffAngle = angle - this.dragRotationBaseAngle;
+        this.rotation = this.dragRotationStartAngle + dragRotationDiffAngle;
+        return console.log(this.rotation);
       }
     };
 
