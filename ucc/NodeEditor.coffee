@@ -6,6 +6,7 @@ define (require) ->
   { Vec2, Vec3 } = require('pex/geom')
   { IO } = require('pex/sys')
   Plane = require('geom/Plane')
+  { sqrt } = Math
 
   class NodeEditor
     constructor: (@window, @camera) ->
@@ -17,11 +18,16 @@ define (require) ->
       @lineBuilder.addLine(new Vec3(0, -1, 0), new Vec3(0, 1, 0), Color.Red)
       @mesh = new Mesh(@lineBuilder, new ShowColors(), { useEdges: true})
 
-      cube = new Cube(0.003, 0.0005, 0.003)
+      @nodeRadius = 0.003
+      cube = new Cube(@nodeRadius, 0.0005, @nodeRadius)
       cube.computeEdges()
       @wireCube = new Mesh(cube, new SolidColor({color:Color.Red}), { useEdges: true })
 
+      @hoverNode = null
+
       @addEventHanlders()
+
+      @load('nodes.txt')
 
     save: (fileName) ->
       IO.saveTextFile(fileName, JSON.stringify(@nodes))
@@ -39,6 +45,10 @@ define (require) ->
       @window.on 'leftMouseDown', (e) =>
         return if e.handled || !@enabled
         @cancelNextClick = false
+        if @hoverNode
+          @hoverNode.selected = !@hoverNode.selected
+          e.handled = true
+          @cancelNextClick = true
 
       @window.on 'leftMouseUp', (e) =>
         console.log('cancelNextClick', @cancelNextClick)
@@ -52,8 +62,21 @@ define (require) ->
         @nodes.push({
           layerId: @currentLayer.id
           position: hit3d,
-          position2d: hit2d
+          position2d: hit2d,
+          color: Color.Green
         })
+
+      @window.on 'mouseMoved', (e) =>
+        forward = @camera.getTarget().dup().sub(@camera.getPosition()).normalize()
+        @layerPlane = new Plane(@currentLayer.position, forward)
+        ray = @camera.getWorldRay(e.x, e.y, @window.width, @window.height)
+        hits = ray.hitTestPlane(@layerPlane.point, @layerPlane.N)
+        hit3d = hits[0]
+        @hoverNode = null
+        for node, i in @nodes
+          if node.layerId != @currentLayer.id then continue
+          if hit3d.distance(node.position) < @nodeRadius
+            @hoverNode = node
 
       @window.on 'mouseDragged', (e) =>
         @cancelNextClick = true
@@ -70,7 +93,11 @@ define (require) ->
 
     draw: (camera) ->
       @mesh.draw(camera)
-      @wireCube.drawInstances(camera, @nodes)
+      @wireCube.material.uniforms.color = Color.Red
+      @wireCube.drawInstances(camera, @nodes.filter((node) -> !node.selected))
+      @wireCube.material.uniforms.color = Color.Blue
+      @wireCube.drawInstances(camera, @nodes.filter((node) -> node.selected))
+      @wireCube.drawInstances(camera, [@hoverNode]) if @hoverNode
       #for node in @nodes
       #  @wireCube.position = node.position
       #  @wireCube.draw(camera, @nodes)
