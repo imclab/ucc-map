@@ -72,23 +72,21 @@ define (require) ->
         @dragCenter.setVec3(@camera.getTarget())
       if e.option
         @dragDelta.asSub(hits[0], @camera.getTarget())
-        radians = Math.atan2(-@dragDelta.z, @dragDelta.x)
+        radians = Math.atan2(-(y - @window.height/2), x - @window.width/2)
         angle = Math.floor(radians*180/Math.PI)
         if !@dragRotationInit
           @dragRotationInit = true
           @dragRotationBaseAngle = angle #-> rotateAngleBase
         dragRotationDiffAngle = angle - @dragRotationBaseAngle
-        #@rotation = @dragRotationStartAngle + dragRotationDiffAngle
-        @rotation = dragRotationDiffAngle
+        @rotation = @dragRotationStartAngle + dragRotationDiffAngle
         u = cos(@rotation / 180 * PI)
         v = sin(@rotation / 180 * PI)
         newUp = new Vec3(
           @dragStartCameraRight.x * u +  @dragStartCameraUp.x * v
           @dragStartCameraRight.y * u +  @dragStartCameraUp.y * v
           @dragStartCameraRight.z * u +  @dragStartCameraUp.z * v
-        )
-        @camera.setUp(newUp);
-
+        ).normalize()
+        @camera.setUp(newUp)
     updateCamera: () ->
       if !@up
         @up = Vec3.create().asSub(@camera.getPosition(), @camera.getTarget()).normalize()

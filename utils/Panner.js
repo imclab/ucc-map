@@ -93,17 +93,17 @@ define(function(require) {
       }
       if (e.option) {
         this.dragDelta.asSub(hits[0], this.camera.getTarget());
-        radians = Math.atan2(-this.dragDelta.z, this.dragDelta.x);
+        radians = Math.atan2(-(y - this.window.height / 2), x - this.window.width / 2);
         angle = Math.floor(radians * 180 / Math.PI);
         if (!this.dragRotationInit) {
           this.dragRotationInit = true;
           this.dragRotationBaseAngle = angle;
         }
         dragRotationDiffAngle = angle - this.dragRotationBaseAngle;
-        this.rotation = dragRotationDiffAngle;
+        this.rotation = this.dragRotationStartAngle + dragRotationDiffAngle;
         u = cos(this.rotation / 180 * PI);
         v = sin(this.rotation / 180 * PI);
-        newUp = new Vec3(this.dragStartCameraRight.x * u + this.dragStartCameraUp.x * v, this.dragStartCameraRight.y * u + this.dragStartCameraUp.y * v, this.dragStartCameraRight.z * u + this.dragStartCameraUp.z * v);
+        newUp = new Vec3(this.dragStartCameraRight.x * u + this.dragStartCameraUp.x * v, this.dragStartCameraRight.y * u + this.dragStartCameraUp.y * v, this.dragStartCameraRight.z * u + this.dragStartCameraUp.z * v).normalize();
         return this.camera.setUp(newUp);
       }
     };
