@@ -10,19 +10,21 @@ define (require) ->
 
   class NodeEditor
     constructor: (@window, @camera) ->
+      @normalColor = new Color(1.0, 0.2, 0.0, 1.0)
+      @selectedColor = new Color(0.0, 0.7, 1.0, 1.0)
       @currentLayer = null
       @enabled = false
       @nodes = []
       @connections = []
 
       @lineBuilder = new LineBuilder()
-      @lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), Color.Red)
+      @lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), @normalColor)
       @lineMesh = new Mesh(@lineBuilder, new ShowColors(), { useEdges: true})
 
       @nodeRadius = 0.003
       cube = new Cube(@nodeRadius, 0.0005, @nodeRadius)
       cube.computeEdges()
-      @wireCube = new Mesh(cube, new SolidColor({color:Color.Red}), { useEdges: true })
+      @wireCube = new Mesh(cube, new SolidColor({color:@normalColor}), { useEdges: true })
 
       @hoverNode = null
 
@@ -165,16 +167,16 @@ define (require) ->
     updateConnectionsMesh: () ->
       @lineBuilder.reset()
       for connection in @connections
-        @lineBuilder.addLine(connection.a.position, connection.b.position, Color.Red)
+        @lineBuilder.addLine(connection.a.position, connection.b.position, @normalColor)
 
     setCurrentLayer: (layer) ->
       @currentLayer = layer
 
     draw: (camera) ->
       @lineMesh.draw(camera)
-      @wireCube.material.uniforms.color = Color.Red
+      @wireCube.material.uniforms.color = @normalColor
       @wireCube.drawInstances(camera, @nodes.filter((node) -> !node.selected))
-      @wireCube.material.uniforms.color = Color.Blue
+      @wireCube.material.uniforms.color = @selectedColor
       @wireCube.drawInstances(camera, @nodes.filter((node) -> node.selected))
       @wireCube.drawInstances(camera, [@hoverNode]) if @hoverNode
       #for node in @nodes

@@ -16,12 +16,14 @@ define(function(require) {
 
       this.window = window;
       this.camera = camera;
+      this.normalColor = new Color(1.0, 0.2, 0.0, 1.0);
+      this.selectedColor = new Color(0.0, 0.7, 1.0, 1.0);
       this.currentLayer = null;
       this.enabled = false;
       this.nodes = [];
       this.connections = [];
       this.lineBuilder = new LineBuilder();
-      this.lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), Color.Red);
+      this.lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), this.normalColor);
       this.lineMesh = new Mesh(this.lineBuilder, new ShowColors(), {
         useEdges: true
       });
@@ -29,7 +31,7 @@ define(function(require) {
       cube = new Cube(this.nodeRadius, 0.0005, this.nodeRadius);
       cube.computeEdges();
       this.wireCube = new Mesh(cube, new SolidColor({
-        color: Color.Red
+        color: this.normalColor
       }), {
         useEdges: true
       });
@@ -271,7 +273,7 @@ define(function(require) {
       _results = [];
       for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
         connection = _ref3[_i];
-        _results.push(this.lineBuilder.addLine(connection.a.position, connection.b.position, Color.Red));
+        _results.push(this.lineBuilder.addLine(connection.a.position, connection.b.position, this.normalColor));
       }
       return _results;
     };
@@ -282,11 +284,11 @@ define(function(require) {
 
     NodeEditor.prototype.draw = function(camera) {
       this.lineMesh.draw(camera);
-      this.wireCube.material.uniforms.color = Color.Red;
+      this.wireCube.material.uniforms.color = this.normalColor;
       this.wireCube.drawInstances(camera, this.nodes.filter(function(node) {
         return !node.selected;
       }));
-      this.wireCube.material.uniforms.color = Color.Blue;
+      this.wireCube.material.uniforms.color = this.selectedColor;
       this.wireCube.drawInstances(camera, this.nodes.filter(function(node) {
         return node.selected;
       }));
