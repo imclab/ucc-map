@@ -1,6 +1,7 @@
 define (require) ->
   Layer = require('./Layer')
-  { Vec3, Quat } = require('pex/geom')
+  Plane = require('../geom/Plane')
+  { Vec3, Quat, Mat4, Triangle2D, BoundingBox } = require('pex/geom')
   { IO } = require('pex/sys')
 
   rayBoxIntersection = (ray, bbox, t0, t1) ->
@@ -154,10 +155,33 @@ define (require) ->
           if drawable.enabled == false then return
           drawable.selected = false
           hits = ray.hitTestPlane(drawable.position, @up)
+          bbox = BoundingBox.fromPoints( drawable.planeMesh.geometry.vertices )
+
+          plane = new Plane(drawable.position, @up)
           if hits.length > 0
             hit = hits[0]
-            bbox = drawable.planeMesh.getBoundingBox()
-            if hit.x >= bbox.min.x && hit.x <= bbox.max.x && hit.z >= bbox.min.z && hit.z <= bbox.max.z
+            hit2d = plane.rebase(plane.project(hit))
+            # 1. bbox to corners
+
+            corners = [
+              new Vec3(bbox.min.x, bbox.max.y, bbox.min.z)
+              new Vec3(bbox.max.x, bbox.max.y, bbox.min.z)
+              new Vec3(bbox.max.x, bbox.max.y, bbox.max.z)
+              new Vec3(bbox.min.x, bbox.max.y, bbox.max.z)
+            ]
+            corners = corners.map (v) =>
+              v.dup().transformMat4(drawable.planeMesh.modelWorldMatrix)
+
+            # 2. project corners on the plane
+            # 3. convert points to 2d
+            corners2d = corners.map(plane.project.bind(plane)).map(plane.rebase.bind(plane))
+
+            # 4. build two triangles from corner points
+            triangle1 = new Triangle2D(corners2d[0], corners2d[1], corners2d[2])
+            triangle2 = new Triangle2D(corners2d[0], corners2d[2], corners2d[3])
+
+            # 5. check if hit point belong to any of the tirangles
+            if triangle1.contains(hit2d) || triangle2.contains(hit2d)
               hitLayers.push(drawable)
 
       if hitLayers.length > 0

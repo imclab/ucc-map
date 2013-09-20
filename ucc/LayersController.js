@@ -2,10 +2,11 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 define(function(require) {
-  var IO, Layer, LayersController, Quat, Vec3, rayBoxIntersection, _ref;
+  var BoundingBox, IO, Layer, LayersController, Mat4, Plane, Quat, Triangle2D, Vec3, rayBoxIntersection, _ref;
 
   Layer = require('./Layer');
-  _ref = require('pex/geom'), Vec3 = _ref.Vec3, Quat = _ref.Quat;
+  Plane = require('../geom/Plane');
+  _ref = require('pex/geom'), Vec3 = _ref.Vec3, Quat = _ref.Quat, Mat4 = _ref.Mat4, Triangle2D = _ref.Triangle2D, BoundingBox = _ref.BoundingBox;
   IO = require('pex/sys').IO;
   rayBoxIntersection = function(ray, bbox, t0, t1) {
     var tmax, tmin, tymax, tymin, tzmax, tzmin;
@@ -231,7 +232,7 @@ define(function(require) {
       hitLayers = [];
       hitPoints = [];
       this.scene.drawables.forEach(function(drawable, i) {
-        var bbox, hit, hits;
+        var bbox, corners, corners2d, hit, hit2d, hits, plane, triangle1, triangle2;
 
         if (drawable instanceof Layer && i > 0) {
           if (drawable.enabled === false) {
@@ -239,10 +240,19 @@ define(function(require) {
           }
           drawable.selected = false;
           hits = ray.hitTestPlane(drawable.position, _this.up);
+          bbox = BoundingBox.fromPoints(drawable.planeMesh.geometry.vertices);
+          plane = new Plane(drawable.position, _this.up);
           if (hits.length > 0) {
             hit = hits[0];
-            bbox = drawable.planeMesh.getBoundingBox();
-            if (hit.x >= bbox.min.x && hit.x <= bbox.max.x && hit.z >= bbox.min.z && hit.z <= bbox.max.z) {
+            hit2d = plane.rebase(plane.project(hit));
+            corners = [new Vec3(bbox.min.x, bbox.max.y, bbox.min.z), new Vec3(bbox.max.x, bbox.max.y, bbox.min.z), new Vec3(bbox.max.x, bbox.max.y, bbox.max.z), new Vec3(bbox.min.x, bbox.max.y, bbox.max.z)];
+            corners = corners.map(function(v) {
+              return v.dup().transformMat4(drawable.planeMesh.modelWorldMatrix);
+            });
+            corners2d = corners.map(plane.project.bind(plane)).map(plane.rebase.bind(plane));
+            triangle1 = new Triangle2D(corners2d[0], corners2d[1], corners2d[2]);
+            triangle2 = new Triangle2D(corners2d[0], corners2d[2], corners2d[3]);
+            if (triangle1.contains(hit2d) || triangle2.contains(hit2d)) {
               return hitLayers.push(drawable);
             }
           }
