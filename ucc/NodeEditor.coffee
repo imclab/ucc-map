@@ -31,15 +31,25 @@ define (require) ->
       @load('nodes.txt')
 
     save: (fileName) ->
-      IO.saveTextFile(fileName, JSON.stringify(@nodes))
+      data = {
+       nodes: @nodes
+       connections: @connections.map((c) => [@nodes.indexOf(c.a), @nodes.indexOf(c.b)])
+      }
+      IO.saveTextFile(fileName, JSON.stringify(data))
 
     load: (fileName) ->
       IO.loadTextFile(fileName, (data) =>
-        @nodes = JSON.parse(data).map (nodeData) -> {
+        data = JSON.parse(data)
+        @nodes = data.nodes.map (nodeData) -> {
           layerId: nodeData.layerId,
           position: new Vec3(nodeData.position.x, nodeData.position.y, nodeData.position.z)
           position2d: new Vec2(nodeData.position2d.x, nodeData.position2d.y)
         }
+        @connections = data.connections.map (connectionData) => {
+          a: @nodes[connectionData[0]]
+          b: @nodes[connectionData[1]]
+        }
+        @updateConnectionsMesh()
       )
 
     addEventHanlders: () ->

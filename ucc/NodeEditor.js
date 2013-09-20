@@ -39,20 +39,37 @@ define(function(require) {
     }
 
     NodeEditor.prototype.save = function(fileName) {
-      return IO.saveTextFile(fileName, JSON.stringify(this.nodes));
+      var data,
+        _this = this;
+
+      data = {
+        nodes: this.nodes,
+        connections: this.connections.map(function(c) {
+          return [_this.nodes.indexOf(c.a), _this.nodes.indexOf(c.b)];
+        })
+      };
+      return IO.saveTextFile(fileName, JSON.stringify(data));
     };
 
     NodeEditor.prototype.load = function(fileName) {
       var _this = this;
 
       return IO.loadTextFile(fileName, function(data) {
-        return _this.nodes = JSON.parse(data).map(function(nodeData) {
+        data = JSON.parse(data);
+        _this.nodes = data.nodes.map(function(nodeData) {
           return {
             layerId: nodeData.layerId,
             position: new Vec3(nodeData.position.x, nodeData.position.y, nodeData.position.z),
             position2d: new Vec2(nodeData.position2d.x, nodeData.position2d.y)
           };
         });
+        _this.connections = data.connections.map(function(connectionData) {
+          return {
+            a: _this.nodes[connectionData[0]],
+            b: _this.nodes[connectionData[1]]
+          };
+        });
+        return _this.updateConnectionsMesh();
       });
     };
 
