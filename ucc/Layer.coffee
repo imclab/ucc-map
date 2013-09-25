@@ -36,7 +36,7 @@ define (require) ->
         @planeMesh.updateBoundingBox()
         borderGeom = new Plane(1, texture.height/texture.width, 3, 3, 'x', 'z')
         borderGeom.computeEdges()
-        @border = new Mesh(borderGeom, new SolidColor({color:Color.Red}), { useEdges:true })
+        @border = new Mesh(borderGeom, new SolidColor({color:Color.Yellow}), { useEdges:true })
       )
 
     draw: (camera) ->
