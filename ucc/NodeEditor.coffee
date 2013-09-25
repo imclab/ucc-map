@@ -166,18 +166,26 @@ define (require) ->
 
     updateConnectionsMesh: () ->
       @lineBuilder.reset()
-      for connection in @connections
+      currentLayerConnections = @connections.filter (connection) =>
+        return @currentLayer && @isNodeVisible(connection.a) && @isNodeVisible(connection.b)
+      for connection in currentLayerConnections
         @lineBuilder.addLine(connection.a.position, connection.b.position, @normalColor)
 
     setCurrentLayer: (layer) ->
       @currentLayer = layer
+      @updateConnectionsMesh()
+
+    isNodeVisible: (node) ->
+      return @currentLayer.id == 0 || node.layerId == @currentLayer.id
 
     draw: (camera) ->
-      @lineMesh.draw(camera)
+      if @lineBuilder.vertices.length > 0
+        @lineMesh.draw(camera)
+
       @wireCube.material.uniforms.color = @normalColor
-      @wireCube.drawInstances(camera, @nodes.filter((node) -> !node.selected))
+      @wireCube.drawInstances(camera, @nodes.filter((node) => !node.selected && @isNodeVisible(node)))
       @wireCube.material.uniforms.color = @selectedColor
-      @wireCube.drawInstances(camera, @nodes.filter((node) -> node.selected))
+      @wireCube.drawInstances(camera, @nodes.filter((node) => node.selected && @isNodeVisible(node)))
       @wireCube.drawInstances(camera, [@hoverNode]) if @hoverNode
       #for node in @nodes
       #  @wireCube.position = node.position

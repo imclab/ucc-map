@@ -137,7 +137,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
             return _results4;
         }
       });
-      return this.onFocusLayerChange(1);
+      return this.onFocusLayerChange(2);
     },
     onFocusLayerChange: function(layerIndex) {
       var drawable, i, selectedLayer, _i, _len, _ref1;

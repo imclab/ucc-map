@@ -266,31 +266,43 @@ define(function(require) {
     };
 
     NodeEditor.prototype.updateConnectionsMesh = function() {
-      var connection, _i, _len, _ref3, _results;
+      var connection, currentLayerConnections, _i, _len, _results,
+        _this = this;
 
       this.lineBuilder.reset();
-      _ref3 = this.connections;
+      currentLayerConnections = this.connections.filter(function(connection) {
+        return _this.currentLayer && _this.isNodeVisible(connection.a) && _this.isNodeVisible(connection.b);
+      });
       _results = [];
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        connection = _ref3[_i];
+      for (_i = 0, _len = currentLayerConnections.length; _i < _len; _i++) {
+        connection = currentLayerConnections[_i];
         _results.push(this.lineBuilder.addLine(connection.a.position, connection.b.position, this.normalColor));
       }
       return _results;
     };
 
     NodeEditor.prototype.setCurrentLayer = function(layer) {
-      return this.currentLayer = layer;
+      this.currentLayer = layer;
+      return this.updateConnectionsMesh();
+    };
+
+    NodeEditor.prototype.isNodeVisible = function(node) {
+      return this.currentLayer.id === 0 || node.layerId === this.currentLayer.id;
     };
 
     NodeEditor.prototype.draw = function(camera) {
-      this.lineMesh.draw(camera);
+      var _this = this;
+
+      if (this.lineBuilder.vertices.length > 0) {
+        this.lineMesh.draw(camera);
+      }
       this.wireCube.material.uniforms.color = this.normalColor;
       this.wireCube.drawInstances(camera, this.nodes.filter(function(node) {
-        return !node.selected;
+        return !node.selected && _this.isNodeVisible(node);
       }));
       this.wireCube.material.uniforms.color = this.selectedColor;
       this.wireCube.drawInstances(camera, this.nodes.filter(function(node) {
-        return node.selected;
+        return node.selected && _this.isNodeVisible(node);
       }));
       if (this.hoverNode) {
         return this.wireCube.drawInstances(camera, [this.hoverNode]);
