@@ -48,7 +48,8 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
 
       @layers = @layers.map (layerData, id) =>
         layer = new Layer(layerData.img, id)
-        layer.position = new Vec3(Math.random()*0.5-0.25, -0.02 + layerData.level * @layerDistance, Math.random()*0.5-0.25)
+        layerYPos = if layerData.level >= 0 then layerData.level * @layerDistance else 10
+        layer.position = new Vec3(Math.random()*0.5-0.25, -0.02 + layerYPos, Math.random()*0.5-0.25)
         layer.rotationAngle = 0;
         layer.name = layerData.img
         layer.level = layerData.level

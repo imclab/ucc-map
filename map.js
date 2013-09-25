@@ -66,10 +66,11 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
         return _this.onFocusLayerChange(e);
       });
       this.layers = this.layers.map(function(layerData, id) {
-        var layer;
+        var layer, layerYPos;
 
         layer = new Layer(layerData.img, id);
-        layer.position = new Vec3(Math.random() * 0.5 - 0.25, -0.02 + layerData.level * _this.layerDistance, Math.random() * 0.5 - 0.25);
+        layerYPos = layerData.level >= 0 ? layerData.level * _this.layerDistance : 10;
+        layer.position = new Vec3(Math.random() * 0.5 - 0.25, -0.02 + layerYPos, Math.random() * 0.5 - 0.25);
         layer.rotationAngle = 0;
         layer.name = layerData.img;
         layer.level = layerData.level;
