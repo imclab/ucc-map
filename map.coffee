@@ -37,11 +37,11 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
         { img: 'assets/satellite.jpg', level: -1, enabled: false, name: 'ALL', value:0 }
         { img: 'assets/A0-plan.png',   level:  0, enabled: true , name: 'A 0' , value:1 }
         { img: 'assets/A1-plan.png',   level:  1, enabled: true , name: 'A 1' , value:2 }
-        # { img: 'assets/B0-plan.png',   level:  0, enabled: true , name: 'B 0' , value:3 }
-        # { img: 'assets/B1-plan.png',   level:  1, enabled: true , name: 'B 1' , value:4 }
-        # { img: 'assets/C0-plan.png',   level:  0, enabled: true , name: 'C 0' , value:5 }
-        # { img: 'assets/C1-plan.png',   level:  1, enabled: true , name: 'C 1' , value:6 }
-        # { img: 'assets/C2-plan.png',   level:  2, enabled: true , name: 'C 2' , value:7 }
+        { img: 'assets/B0-plan.png',   level:  0, enabled: true , name: 'B 0' , value:3 }
+        { img: 'assets/B1-plan.png',   level:  1, enabled: true , name: 'B 1' , value:4 }
+        { img: 'assets/C0-plan.png',   level:  0, enabled: true , name: 'C 0' , value:5 }
+        { img: 'assets/C1-plan.png',   level:  1, enabled: true , name: 'C 1' , value:6 }
+        { img: 'assets/C2-plan.png',   level:  2, enabled: true , name: 'C 2' , value:7 }
       ]
 
       @gui.addRadioList('Focus on', this, 'focusLayerId', @layers, (e) => @onFocusLayerChange(e))
