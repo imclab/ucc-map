@@ -30,6 +30,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
     xray: false,
     focusLayerId: 0,
     enableLayerEditing: false,
+    showPlans: true,
     init: function() {
       var _this = this;
 
@@ -37,10 +38,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.scene = new Scene();
       this.gui = new GUI(this);
       this.gui.addLabel('x - xray mode');
-      this.gui.addLabel('1 - ground floor');
-      this.gui.addLabel('2 - 1st floor');
-      this.gui.addLabel('3 - 2nd floor');
-      this.gui.addLabel('a - all floors');
+      this.gui.addParam('show plans', this, 'showPlans');
       MathUtils.seed(0);
       this.layers = [
         {
@@ -206,6 +204,13 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       return this.gui.items[0].dirty = true;
     },
     draw: function() {
+      var layer, _i, _len, _ref1;
+
+      _ref1 = this.layers;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        layer = _ref1[_i];
+        layer.showImage = layer.id === 0 || this.showPlans;
+      }
       this.glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black);
       this.layers[0].enabled = !this.xray;
       if (this.xray) {

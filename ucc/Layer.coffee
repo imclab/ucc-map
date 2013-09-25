@@ -8,8 +8,6 @@ define (require) ->
   { Platform } = require('pex/sys')
 
   class Layer
-    selected: false
-    alpha: 1
     constructor: (imageFile, @id) ->
       @position = new Vec3(0, 0, 0)
       @scale = new Vec3(1, 1, 1)
@@ -17,6 +15,9 @@ define (require) ->
       @rotation = new Quat()
       @axis = new Vec3(0, 1, 0)
       @rotationAngle = 0
+      @showImage = true
+      @selected = false
+      @alpha = 1
 
       Texture2D.load(imageFile, (texture) =>
         texture.bind()
@@ -53,6 +54,6 @@ define (require) ->
           @border.scale.setVec3(@scale)
           @planeMesh.updateBoundingBox()
 
-        @planeMesh.draw(camera)
+        if @showImage then @planeMesh.draw(camera)
         @border.draw(camera) if @selected
 

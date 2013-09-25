@@ -10,10 +10,6 @@ define(function(require) {
   Color = require('pex/color').Color;
   Platform = require('pex/sys').Platform;
   return Layer = (function() {
-    Layer.prototype.selected = false;
-
-    Layer.prototype.alpha = 1;
-
     function Layer(imageFile, id) {
       var _this = this;
 
@@ -24,6 +20,9 @@ define(function(require) {
       this.rotation = new Quat();
       this.axis = new Vec3(0, 1, 0);
       this.rotationAngle = 0;
+      this.showImage = true;
+      this.selected = false;
+      this.alpha = 1;
       Texture2D.load(imageFile, function(texture) {
         var borderGeom, gl, planeGeom;
 
@@ -68,7 +67,9 @@ define(function(require) {
           this.border.scale.setVec3(this.scale);
           this.planeMesh.updateBoundingBox();
         }
-        this.planeMesh.draw(camera);
+        if (this.showImage) {
+          this.planeMesh.draw(camera);
+        }
         if (this.selected) {
           return this.border.draw(camera);
         }

@@ -20,6 +20,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
     xray: false
     focusLayerId: 0
     enableLayerEditing: false
+    showPlans: true
     init: () ->
       @camera = new PerspectiveCamera(60, @width/@height, 0.01, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
       #@camera = new OrthographicCamera(-@width/@height, @width/@height, -1, 1, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
@@ -27,10 +28,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
 
       @gui = new GUI(this)
       @gui.addLabel('x - xray mode')
-      @gui.addLabel('1 - ground floor')
-      @gui.addLabel('2 - 1st floor')
-      @gui.addLabel('3 - 2nd floor')
-      @gui.addLabel('a - all floors')
+      @gui.addParam('show plans', this, 'showPlans')
 
       MathUtils.seed(0)
 
@@ -120,6 +118,9 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       @gui.items[0].dirty = true
 
     draw: () ->
+      for layer in @layers
+        layer.showImage = layer.id == 0 || @showPlans
+
       @glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black)
       @layers[0].enabled = !@xray
       @layers[0].border.draw(@camera) if @xray
