@@ -48,7 +48,7 @@ define(function(require) {
         borderGeom = new Plane(1, texture.height / texture.width, 3, 3, 'x', 'z');
         borderGeom.computeEdges();
         return _this.border = new Mesh(borderGeom, new SolidColor({
-          color: Color.Yellow
+          color: new Color(0.1, 0.99, 0.9, 1)
         }), {
           useEdges: true
         });
