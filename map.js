@@ -188,15 +188,15 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       this.panner.enabled = layerIndex !== 0;
       this.nodeEditor.enabled = layerIndex !== 0;
       this.nodeEditor.setCurrentLayer(this.layers[layerIndex]);
+      this.camera.getTarget().setVec3(selectedLayer.position);
       if (reorientCamera) {
-        this.camera.getTarget().setVec3(selectedLayer.position);
         this.camera.setUp(new Vec3(0, 0, 1));
         this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
         this.camera.updateMatrices();
         this.panner.cameraUp.setVec3(new Vec3(0, 0, 1));
-        if (this.panner.enabled) {
-          this.panner.updateCamera();
-        }
+      }
+      if (this.panner.enabled) {
+        this.panner.updateCamera();
       }
       if (this.arcball.enabled) {
         this.arcball.updateCamera();
