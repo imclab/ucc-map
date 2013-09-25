@@ -179,7 +179,7 @@ define(function(require) {
       var data,
         _this = this;
 
-      console.log('LayersController.saveLayers' + fileName);
+      console.log('LayersController.saveLayers ' + fileName);
       data = {};
       this.scene.drawables.forEach(function(drawable, i) {
         var layer;
@@ -199,7 +199,7 @@ define(function(require) {
     LayersController.prototype.loadLayers = function(fileName) {
       var _this = this;
 
-      console.log('LayersController.loadLayers' + fileName);
+      console.log('LayersController.loadLayers ' + fileName);
       return IO.loadTextFile(fileName, function(dataStr) {
         var data;
 

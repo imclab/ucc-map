@@ -117,7 +117,7 @@ define (require) ->
           drawable.position.y = if @compactLayers then drawable.level * 0.005 else drawable.level * 0.1
 
     saveLayers: (fileName) ->
-      console.log('LayersController.saveLayers' + fileName)
+      console.log('LayersController.saveLayers ' + fileName)
       data = {}
       @scene.drawables.forEach (drawable, i) =>
         if drawable instanceof Layer
@@ -130,7 +130,7 @@ define (require) ->
       IO.saveTextFile(fileName, JSON.stringify(data))
 
     loadLayers: (fileName) =>
-      console.log('LayersController.loadLayers' + fileName)
+      console.log('LayersController.loadLayers ' + fileName)
       IO.loadTextFile(fileName, (dataStr) =>
         data = JSON.parse(dataStr)
         @scene.drawables.forEach (drawable, i) =>
