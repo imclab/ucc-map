@@ -74,15 +74,18 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
             @xray = !@xray
             for layer in @layers
               layer.planeMesh.material.uniforms.xray = @xray
-          when '1'
+          when '0'
             for drawable in @scene.drawables
               drawable.enabled = drawable.level == 0
-          when '2'
+              @onFocusLayerChange(0)
+          when '1'
             for drawable in @scene.drawables
               drawable.enabled = drawable.level == 1
-          when '3'
+              @onFocusLayerChange(1)
+          when '2'
             for drawable in @scene.drawables
               drawable.enabled = drawable.level == 2
+              @onFocusLayerChange(2)
           when 'a'
             for drawable in @scene.drawables
               drawable.enabled = true
@@ -94,18 +97,25 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
         drawable.enabled = (i == layerIndex) || (0 == layerIndex)
       selectedLayer = @scene.drawables[layerIndex]
 
+      reorientCamera = @arcball.enabled
+
       @arcball.enabled = (layerIndex == 0)
       @layersController.enabled = (layerIndex == 0)
       @panner.enabled = (layerIndex != 0)
       @nodeEditor.enabled = (layerIndex != 0)
       @nodeEditor.setCurrentLayer(@layers[layerIndex])
-      @camera.getTarget().setVec3(selectedLayer.position)
-      @camera.setUp(new Vec3(0, 0, 1))
-      @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)
-      @camera.updateMatrices()
-      @panner.cameraUp.setVec3(new Vec3(0, 0, 1))
-      @panner.updateCamera() if @panner.enabled
+      if reorientCamera
+        @camera.getTarget().setVec3(selectedLayer.position)
+        @camera.setUp(new Vec3(0, 0, 1))
+        @camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z)
+        @camera.updateMatrices()
+        @panner.cameraUp.setVec3(new Vec3(0, 0, 1))
+        @panner.updateCamera() if @panner.enabled
       @arcball.updateCamera() if @arcball.enabled
+
+      #force gui refresh
+      @focusLayerId = layerIndex
+      @gui.items[0].dirty = true
 
     draw: () ->
       @glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black)

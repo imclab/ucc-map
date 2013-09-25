@@ -100,30 +100,33 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
             }
             return _results;
             break;
-          case '1':
+          case '0':
             _ref2 = _this.scene.drawables;
             _results1 = [];
             for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
               drawable = _ref2[_j];
-              _results1.push(drawable.enabled = drawable.level === 0);
+              drawable.enabled = drawable.level === 0;
+              _results1.push(_this.onFocusLayerChange(0));
             }
             return _results1;
             break;
-          case '2':
+          case '1':
             _ref3 = _this.scene.drawables;
             _results2 = [];
             for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
               drawable = _ref3[_k];
-              _results2.push(drawable.enabled = drawable.level === 1);
+              drawable.enabled = drawable.level === 1;
+              _results2.push(_this.onFocusLayerChange(1));
             }
             return _results2;
             break;
-          case '3':
+          case '2':
             _ref4 = _this.scene.drawables;
             _results3 = [];
             for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
               drawable = _ref4[_l];
-              _results3.push(drawable.enabled = drawable.level === 2);
+              drawable.enabled = drawable.level === 2;
+              _results3.push(_this.onFocusLayerChange(2));
             }
             return _results3;
             break;
@@ -140,7 +143,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       return this.onFocusLayerChange(2);
     },
     onFocusLayerChange: function(layerIndex) {
-      var drawable, i, selectedLayer, _i, _len, _ref1;
+      var drawable, i, reorientCamera, selectedLayer, _i, _len, _ref1;
 
       _ref1 = this.scene.drawables;
       for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
@@ -148,22 +151,27 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
         drawable.enabled = (i === layerIndex) || (0 === layerIndex);
       }
       selectedLayer = this.scene.drawables[layerIndex];
+      reorientCamera = this.arcball.enabled;
       this.arcball.enabled = layerIndex === 0;
       this.layersController.enabled = layerIndex === 0;
       this.panner.enabled = layerIndex !== 0;
       this.nodeEditor.enabled = layerIndex !== 0;
       this.nodeEditor.setCurrentLayer(this.layers[layerIndex]);
-      this.camera.getTarget().setVec3(selectedLayer.position);
-      this.camera.setUp(new Vec3(0, 0, 1));
-      this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
-      this.camera.updateMatrices();
-      this.panner.cameraUp.setVec3(new Vec3(0, 0, 1));
-      if (this.panner.enabled) {
-        this.panner.updateCamera();
+      if (reorientCamera) {
+        this.camera.getTarget().setVec3(selectedLayer.position);
+        this.camera.setUp(new Vec3(0, 0, 1));
+        this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
+        this.camera.updateMatrices();
+        this.panner.cameraUp.setVec3(new Vec3(0, 0, 1));
+        if (this.panner.enabled) {
+          this.panner.updateCamera();
+        }
       }
       if (this.arcball.enabled) {
-        return this.arcball.updateCamera();
+        this.arcball.updateCamera();
       }
+      this.focusLayerId = layerIndex;
+      return this.gui.items[0].dirty = true;
     },
     draw: function() {
       this.glx.enableDepthWriteAndRead(true, true).clearColorAndDepth(Color.Black);
