@@ -29,6 +29,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
     layerDistance: 0.1,
     xray: false,
     focusLayerId: 0,
+    enableLayerEditing: false,
     init: function() {
       var _this = this;
 
@@ -184,7 +185,7 @@ pex.require(['utils/GLX', 'ucc/Layer', 'ucc/LayersController', 'utils/Panner', '
       selectedLayer = this.scene.drawables[layerIndex];
       reorientCamera = this.arcball.enabled;
       this.arcball.enabled = layerIndex === 0;
-      this.layersController.enabled = layerIndex === 0;
+      this.layersController.enabled = (layerIndex === 0) && this.enableLayerEditing;
       this.panner.enabled = layerIndex !== 0;
       this.nodeEditor.enabled = layerIndex !== 0;
       this.nodeEditor.setCurrentLayer(this.layers[layerIndex]);

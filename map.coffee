@@ -18,7 +18,8 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       fullscreen: pex.sys.Platform.isBrowser
     layerDistance: 0.1
     xray: false
-    focusLayerId: 0,
+    focusLayerId: 0
+    enableLayerEditing: false
     init: () ->
       @camera = new PerspectiveCamera(60, @width/@height, 0.01, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
       #@camera = new OrthographicCamera(-@width/@height, @width/@height, -1, 1, 0.1, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1))
@@ -101,7 +102,7 @@ pex.require ['utils/GLX','ucc/Layer', 'ucc/LayersController', 'utils/Panner', 'g
       reorientCamera = @arcball.enabled
 
       @arcball.enabled = (layerIndex == 0)
-      @layersController.enabled = (layerIndex == 0)
+      @layersController.enabled = (layerIndex == 0) && @enableLayerEditing
       @panner.enabled = (layerIndex != 0)
       @nodeEditor.enabled = (layerIndex != 0)
       @nodeEditor.setCurrentLayer(@layers[layerIndex])
