@@ -14,7 +14,7 @@ define(function(require) {
       this.enabled = true;
       this.allowZooming = true;
       this.distance = distance || 2;
-      this.minDistance = distance * 0.1 || 0.1;
+      this.minDistance = distance * 0.025 || 0.025;
       this.maxDistance = distance * 2 || 5;
       this.clickPos = new Vec2(0, 0);
       this.dragDiff = new Vec2(0, 0);

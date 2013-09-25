@@ -10,7 +10,7 @@ define (require) ->
       @enabled = true
       @allowZooming = true
       @distance = distance || 2;
-      @minDistance = distance*0.1 || 0.1;
+      @minDistance = distance*0.025 || 0.025;
       @maxDistance = distance*2 || 5;
       @clickPos = new Vec2(0, 0)
       @dragDiff = new Vec2(0, 0)
